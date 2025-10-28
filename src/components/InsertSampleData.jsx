@@ -29,10 +29,16 @@ const InsertSampleData = () => {
       
       if (response.success) {
         setResult(response);
+        const empresasCount = response.empresas?.length || 0;
+        const muestrasCount = response.muestras?.length || 0;
+        const catadoresCount = response.catadores?.length || 0;
+        const totalExpected = 5 + 8 + 10; // 23 total
+        const totalInserted = empresasCount + muestrasCount + catadoresCount;
+        
         if (response.errors && response.errors.length > 0) {
-          showAlert(`Inserción parcial completada. Errores: ${response.errors.join(', ')}`, 'warning');
+          showAlert(`Inserción parcial: ${empresasCount}/5 empresas, ${muestrasCount}/8 muestras, ${catadoresCount}/10 catadores. Total: ${totalInserted}/${totalExpected}. Errores: ${response.errors.join(', ')}`, 'warning');
         } else {
-          showAlert('¡Datos de ejemplo insertados correctamente!', 'success');
+          showAlert(`¡Éxito total! Insertados: ${empresasCount}/5 empresas, ${muestrasCount}/8 muestras, ${catadoresCount}/10 catadores. Total: ${totalInserted}/${totalExpected} registros`, 'success');
         }
       } else {
         showAlert(`Error: ${response.error}`, 'error');
@@ -164,12 +170,18 @@ const InsertSampleData = () => {
               <Users className="h-8 w-8 mx-auto mb-2 text-green-600" />
               <h3 className="font-semibold mb-2">10 Catadores</h3>
               <ul className="text-sm text-gray-600 space-y-1">
-                <li>• Especialistas certificados</li>
-                <li>• Diferentes niveles</li>
-                <li>• Asignados a mesas 1-5</li>
-                <li>• Con contraseñas seguras</li>
-                <li className="mt-2 text-blue-600 font-medium">🔐 Contraseña: cata2026</li>
+                <li>• María Elena R.</li>
+                <li>• Antonio García</li>
+                <li>• Carmen López</li>
+                <li>• José Luis S.</li>
+                <li>• Laura Jiménez</li>
+                <li>• Miguel Ángel M.</li>
+                <li>• Isabel Hernández</li>
+                <li>• Francisco Ruiz</li>
+                <li>• Patricia Álvarez</li>
+                <li>• Roberto Díaz</li>
               </ul>
+              <p className="mt-2 text-blue-600 font-medium text-xs">🔐 Contraseña: cata2026</p>
             </div>
           </div>
         </CardContent>

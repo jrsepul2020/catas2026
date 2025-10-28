@@ -108,7 +108,22 @@ async function tryMinimalInsert(tableName, baseData) {
     ...(tableName === 'catadores' ? [
       { catador: baseData.name || 'Test Catador' },
       { usuario: baseData.name || 'testuser' },
-      { login: baseData.email || 'test@example.com' }
+      { login: baseData.email || 'test@example.com' },
+      { 
+        nombre: baseData.name || 'Test',
+        apellido: baseData.surname || 'Catador',
+        email: baseData.email || 'test@example.com'
+      },
+      { 
+        name: baseData.name || 'Test',
+        surname: baseData.surname || 'Catador',
+        email: baseData.email || 'test@example.com'
+      },
+      {
+        nombre: baseData.name || 'Test',
+        email: baseData.email || 'test@example.com',
+        codigo: baseData.code || 'TEST001'
+      }
     ] : [])
   ];
   
@@ -148,18 +163,36 @@ export async function insertSampleData() {
       details: []
     };
 
-    // Datos base para probar
+    // Datos base expandidos para insertar más registros
     const testData = {
       empresas: [
-        { name: 'Bodegas Test', email: 'test@bodegas.com' },
-        { name: 'Viñedos Prueba', email: 'info@vinedos.com' }
+        { name: 'Bodegas Rioja Alta', email: 'contacto@riojalta.com' },
+        { name: 'Vinos del Duero S.L.', email: 'info@vinosduero.es' },
+        { name: 'Cellers Catalanes', email: 'ventas@cellerscatalanes.cat' },
+        { name: 'Bodegas Andaluzas', email: 'contacto@bodegasandaluzas.es' },
+        { name: 'Viñedos Gallegos S.A.', email: 'albariño@vinedosgallegos.com' }
       ],
       muestras: [
-        { name: 'Vino Test 1', code: 'TEST001' },
-        { name: 'Vino Test 2', code: 'TEST002' }
+        { name: 'Rioja Reserva 2019', code: 'RJA001' },
+        { name: 'Ribera Crianza 2020', code: 'DUE002' },
+        { name: 'Cava Brut Reserva', code: 'CAT003' },
+        { name: 'Fino La Palma', code: 'AND004' },
+        { name: 'Albariño Pazo Real', code: 'GAL005' },
+        { name: 'Garnacha Joven 2023', code: 'RJA006' },
+        { name: 'Rosado Premium', code: 'DUE007' },
+        { name: 'Moscatel Dulce', code: 'CAT008' }
       ],
       catadores: [
-        { name: 'Catador Test', email: 'catador@test.com', code: 'CAT001' }
+        { name: 'María Elena', surname: 'Rodríguez Vázquez', email: 'maria.rodriguez@catas2026.com', code: 'CAT001' },
+        { name: 'Antonio', surname: 'García Martín', email: 'antonio.garcia@catas2026.com', code: 'CAT002' },
+        { name: 'Carmen', surname: 'López Fernández', email: 'carmen.lopez@catas2026.com', code: 'CAT003' },
+        { name: 'José Luis', surname: 'Sánchez Ruiz', email: 'joseluis.sanchez@catas2026.com', code: 'CAT004' },
+        { name: 'Laura', surname: 'Jiménez Torres', email: 'laura.jimenez@catas2026.com', code: 'CAT005' },
+        { name: 'Miguel Ángel', surname: 'Moreno Silva', email: 'miguel.moreno@catas2026.com', code: 'CAT006' },
+        { name: 'Isabel', surname: 'Hernández Gómez', email: 'isabel.hernandez@catas2026.com', code: 'CAT007' },
+        { name: 'Francisco', surname: 'Ruiz Castillo', email: 'francisco.ruiz@catas2026.com', code: 'CAT008' },
+        { name: 'Patricia', surname: 'Álvarez Medina', email: 'patricia.alvarez@catas2026.com', code: 'CAT009' },
+        { name: 'Roberto', surname: 'Díaz Serrano', email: 'roberto.diaz@catas2026.com', code: 'CAT010' }
       ]
     };
 
@@ -179,28 +212,35 @@ export async function insertSampleData() {
         continue;
       }
       
-      // Intentar insertar algunos registros de prueba
+      // Intentar insertar todos los registros de prueba
       let successCount = 0;
-      const maxAttempts = Math.min(dataArray.length, 2); // Máximo 2 registros por tabla
+      const totalAttempts = dataArray.length;
       
-      for (let i = 0; i < maxAttempts; i++) {
+      console.log(`📊 ${tableName} - Intentando insertar ${totalAttempts} registros...`);
+      
+      for (let i = 0; i < totalAttempts; i++) {
         const baseData = dataArray[i];
         const result = await tryMinimalInsert(tableName, baseData);
         
         if (result.success) {
           successCount++;
-          console.log(`✅ ${tableName} - Registro ${i + 1} insertado correctamente`);
+          console.log(`✅ ${tableName} - Registro ${i + 1}/${totalAttempts} insertado: ${baseData.name || baseData.code || 'Sin nombre'}`);
         } else {
-          console.log(`❌ ${tableName} - Registro ${i + 1} falló: ${result.message}`);
+          console.log(`❌ ${tableName} - Registro ${i + 1}/${totalAttempts} falló (${baseData.name || baseData.code}): ${result.message}`);
         }
+        
+        // Pequeña pausa entre inserciones para evitar límites de rate
+        await new Promise(resolve => setTimeout(resolve, 100));
       }
       
       results[tableName] = successCount;
       
       if (successCount === 0) {
-        results.errors.push(`${tableName}: No se pudo insertar ningún registro`);
-      } else if (successCount < maxAttempts) {
-        results.errors.push(`${tableName}: Solo se insertaron ${successCount} de ${maxAttempts} registros`);
+        results.errors.push(`${tableName}: No se pudo insertar ningún registro de ${totalAttempts} intentados`);
+      } else if (successCount < totalAttempts) {
+        results.errors.push(`${tableName}: Solo se insertaron ${successCount} de ${totalAttempts} registros`);
+      } else {
+        console.log(`🎉 ${tableName} - Todos los registros insertados correctamente (${successCount}/${totalAttempts})`);
       }
     }
 
@@ -212,17 +252,38 @@ export async function insertSampleData() {
         const salt = await bcrypt.genSalt(10);
         const password_hash = await bcrypt.hash(password, salt);
         
-        // Intentar actualizar catadores con contraseña
-        const { error: updateError } = await supabase
+        // Obtener catadores recién insertados que contengan 'test' o emails de ejemplo
+        const { data: catadoresInsertados } = await supabase
           .from('catadores')
-          .update({ password_hash })
-          .not('id', 'is', null); // Actualizar todos los registros
+          .select('id')
+          .or('email.ilike.%test%,email.ilike.%catas2026%,nombre.ilike.%test%');
         
-        if (updateError) {
-          console.log('⚠️ No se pudo añadir contraseñas:', updateError.message);
-          results.errors.push('Catadores: Contraseñas no añadidas');
-        } else {
-          console.log('✅ Contraseñas añadidas a catadores');
+        if (catadoresInsertados && catadoresInsertados.length > 0) {
+          // Intentar actualizar con diferentes nombres de columna para password
+          const passwordFields = ['password_hash', 'password', 'clave', 'contraseña'];
+          let passwordUpdated = false;
+          
+          for (const field of passwordFields) {
+            try {
+              const { error: updateError } = await supabase
+                .from('catadores')
+                .update({ [field]: password_hash })
+                .in('id', catadoresInsertados.map(c => c.id));
+              
+              if (!updateError) {
+                console.log(`✅ Contraseñas añadidas usando campo: ${field}`);
+                passwordUpdated = true;
+                break;
+              }
+            } catch {
+              // Intentar siguiente campo
+            }
+          }
+          
+          if (!passwordUpdated) {
+            console.log('⚠️ No se pudo añadir contraseñas - campo password no encontrado');
+            results.errors.push('Catadores: Contraseñas no añadidas (campo no encontrado)');
+          }
         }
       } catch (err) {
         console.log('⚠️ Error añadiendo contraseñas:', err.message);
