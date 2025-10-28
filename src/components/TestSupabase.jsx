@@ -122,89 +122,116 @@ function TestSupabase() {
 
   const checkTableSchema = async () => {
     console.log('🗂️ Verificando esquema de tablas...');
+    alert('🗂️ Verificando esquema... Revisa la consola (F12)');
     
     try {
       // Intentar obtener un registro para ver las columnas disponibles
-      const { data: sampleCatador, error: catadorError } = await supabase
+      console.log('👥 Obteniendo muestra de catadores...');
+      const catadorResult = await supabase
         .from('catadores')
         .select('*')
         .limit(1);
       
-      if (catadorError) {
-        console.log('❌ No se pudo acceder a catadores:', catadorError.message);
+      if (catadorResult.error) {
+        console.log('❌ No se pudo acceder a catadores:', catadorResult.error.message);
+        alert('❌ Error catadores: ' + catadorResult.error.message);
       } else {
         console.log('📋 Estructura de tabla catadores:');
-        if (sampleCatador && sampleCatador.length > 0) {
-          console.log('Columnas disponibles:', Object.keys(sampleCatador[0]));
+        if (catadorResult.data && catadorResult.data.length > 0) {
+          const columns = Object.keys(catadorResult.data[0]);
+          console.log('Columnas disponibles:', columns);
+          alert('✅ Catadores - Columnas: ' + columns.join(', '));
         } else {
           console.log('Tabla catadores existe pero está vacía');
+          alert('⚠️ Tabla catadores está vacía');
         }
       }
 
-      const { data: sampleMuestra, error: muestraError } = await supabase
+      console.log('📊 Obteniendo muestra de muestras...');
+      const muestraResult = await supabase
         .from('muestras')
         .select('*')
         .limit(1);
       
-      if (muestraError) {
-        console.log('❌ No se pudo acceder a muestras:', muestraError.message);
+      if (muestraResult.error) {
+        console.log('❌ No se pudo acceder a muestras:', muestraResult.error.message);
+        alert('❌ Error muestras: ' + muestraResult.error.message);
       } else {
         console.log('📋 Estructura de tabla muestras:');
-        if (sampleMuestra && sampleMuestra.length > 0) {
-          console.log('Columnas disponibles:', Object.keys(sampleMuestra[0]));
+        if (muestraResult.data && muestraResult.data.length > 0) {
+          const columns = Object.keys(muestraResult.data[0]);
+          console.log('Columnas disponibles:', columns);
+          alert('✅ Muestras - Columnas: ' + columns.join(', '));
         } else {
           console.log('Tabla muestras existe pero está vacía');
+          alert('⚠️ Tabla muestras está vacía');
         }
       }
 
     } catch (err) {
       console.error('💥 Error verificando esquema:', err);
+      alert('💥 Error: ' + err.message);
     }
   };
 
   const testConnection = async () => {
     console.log('🔍 Iniciando pruebas de Supabase...');
+    alert('🔍 Iniciando pruebas... Revisa la consola (F12)');
     
     try {
+      // Verificar que supabase esté disponible
+      console.log('🔗 Cliente Supabase:', supabase);
+      
       // Probar muestras
       console.log('📊 Probando tabla muestras...');
-      const { data: muestrasData, error: muestrasError, count: muestrasCount } = await supabase
+      const muestrasResult = await supabase
         .from('muestras')
         .select('*', { count: 'exact' });
       
-      if (muestrasError) {
-        console.error('❌ Error muestras:', muestrasError);
+      console.log('📊 Resultado completo muestras:', muestrasResult);
+      
+      if (muestrasResult.error) {
+        console.error('❌ Error muestras:', muestrasResult.error);
+        alert('❌ Error en muestras: ' + muestrasResult.error.message);
       } else {
-        console.log('✅ Muestras encontradas:', muestrasCount);
-        console.log('📋 Primeras 5 muestras:', muestrasData?.slice(0, 5));
+        console.log('✅ Muestras encontradas:', muestrasResult.count);
+        console.log('📋 Primeras 5 muestras:', muestrasResult.data?.slice(0, 5));
+        alert(`✅ Muestras: ${muestrasResult.count} registros encontrados`);
       }
 
       // Probar catadores
       console.log('👥 Probando tabla catadores...');
-      const { data: catadoresData, error: catadoresError, count: catadoresCount } = await supabase
+      const catadoresResult = await supabase
         .from('catadores')
         .select('*', { count: 'exact' });
       
-      if (catadoresError) {
-        console.error('❌ Error catadores:', catadoresError);
+      console.log('👥 Resultado completo catadores:', catadoresResult);
+      
+      if (catadoresResult.error) {
+        console.error('❌ Error catadores:', catadoresResult.error);
+        alert('❌ Error en catadores: ' + catadoresResult.error.message);
       } else {
-        console.log('✅ Catadores encontrados:', catadoresCount);
-        console.log('📋 Primeros 5 catadores:', catadoresData?.slice(0, 5));
+        console.log('✅ Catadores encontrados:', catadoresResult.count);
+        console.log('📋 Primeros 5 catadores:', catadoresResult.data?.slice(0, 5));
+        alert(`✅ Catadores: ${catadoresResult.count} registros encontrados`);
       }
 
       // Probar las tablas disponibles
       console.log('🗂️ Probando listar tablas...');
-      const { data: tablesData, error: tablesError } = await supabase
+      const tablesResult = await supabase
         .rpc('get_table_names');
       
-      if (tablesError) {
-        console.log('📝 No se pudo obtener lista de tablas (normal)');
+      if (tablesResult.error) {
+        console.log('📝 No se pudo obtener lista de tablas (normal):', tablesResult.error.message);
       } else {
-        console.log('📋 Tablas disponibles:', tablesData);
+        console.log('📋 Tablas disponibles:', tablesResult.data);
       }
+      
+      alert('✅ Pruebas completadas. Revisa la consola para detalles.');
 
     } catch (err) {
       console.error('💥 Error general:', err);
+      alert('💥 Error general: ' + err.message);
     }
   };
 

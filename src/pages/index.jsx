@@ -20,6 +20,8 @@ import Configuracion from "./Configuracion";
 
 import ConfiguracionInicial from "./ConfiguracionInicial";
 
+import DatosEjemplo from "./DatosEjemplo";
+
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
 const PAGES = {
@@ -88,6 +90,8 @@ function PagesContent() {
                 <Route path="/Configuracion" element={<Configuracion />} />
                 
                 <Route path="/setup" element={<ConfiguracionInicial />} />
+                
+                <Route path="/datos-ejemplo" element={<DatosEjemplo />} />
             </Routes>
         </Layout>
     );
