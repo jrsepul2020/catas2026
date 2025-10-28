@@ -20,9 +20,14 @@ export default defineConfig({
         theme_color: '#333951',
         background_color: '#ffffff',
         display: 'standalone',
-        orientation: 'portrait',
+        orientation: 'landscape',
         scope: '/',
         start_url: '/',
+        prefer_related_applications: false,
+        display_override: ['window-controls-overlay', 'standalone'],
+        categories: ['productivity', 'business', 'food'],
+        lang: 'es',
+        dir: 'ltr',
         icons: [
           {
             src: 'pwa-192x192.svg',

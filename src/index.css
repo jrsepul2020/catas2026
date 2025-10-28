@@ -180,3 +180,67 @@ button:focus-visible {
   color: white !important;
   border-left: 4px solid white !important;
 }
+
+/* PWA Optimization for 1280x728px landscape */
+@media (display-mode: standalone) {
+  html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+  
+  /* Optimización para resolución específica */
+  @media (min-width: 1280px) and (orientation: landscape) {
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+    
+    /* Ajustar el layout principal para usar todo el espacio */
+    [data-sidebar="content"] {
+      min-height: 728px;
+    }
+    
+    /* Optimizar el sidebar para pantallas horizontales */
+    [data-sidebar="sidebar"] {
+      min-height: 728px;
+    }
+  }
+  
+  /* Forzar orientación horizontal en PWA */
+  @media (orientation: portrait) and (display-mode: standalone) {
+    body::before {
+      content: "Para mejor experiencia, gira tu dispositivo";
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #333951;
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      z-index: 9999;
+      font-size: 16px;
+      text-align: center;
+    }
+  }
+}
+
+/* Ocultar scrollbars en PWA para un look más nativo */
+@media (display-mode: standalone) {
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: rgba(51, 57, 81, 0.3);
+    border-radius: 3px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(51, 57, 81, 0.5);
+  }
+}
