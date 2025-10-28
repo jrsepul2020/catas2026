@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Sparkles } from "lucide-react";
+import PropTypes from 'prop-types';
 
 export default function WelcomeCard({ greeting, userName }) {
   return (
@@ -32,3 +33,8 @@ export default function WelcomeCard({ greeting, userName }) {
     </Card>
   );
 }
+
+WelcomeCard.propTypes = {
+  greeting: PropTypes.string,
+  userName: PropTypes.string
+};

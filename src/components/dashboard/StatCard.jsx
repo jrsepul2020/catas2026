@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { TrendingUp, TrendingDown } from "lucide-react";
+import PropTypes from 'prop-types';
 
 const colorVariants = {
   gold: {
@@ -34,3 +35,12 @@ export default function StatCard({ title, value, icon: Icon, trend, trendUp, col
     </Card>
   );
 }
+
+StatCard.propTypes = {
+  title: PropTypes.string.isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  icon: PropTypes.elementType.isRequired,
+  trend: PropTypes.string,
+  trendUp: PropTypes.bool,
+  color: PropTypes.string
+};

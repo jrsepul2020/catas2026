@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Users, MapPin, Monitor, Clock, AlertCircle, CheckCircle, User } from "lucide-react";
-import { useAuth } from "@/components/AuthProvider.jsx";
+import { useAuth } from "@/hooks/useAuth.js";
 
 export default function Mesas() {
   const [vista, setVista] = useState("grid"); // grid o table

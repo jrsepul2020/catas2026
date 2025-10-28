@@ -26,13 +26,12 @@ export default function MisCatas() {
 
   const getVinoNombre = (cata) => {
     // Tu tabla catas no tiene relación directa con muestras
-    // Buscar por codigotexto en la lista de vinos/muestras
+    // Buscar por codigo en la lista de vinos/muestras
     const vino = vinos.find(v => 
       v.codigo === cata.codigo_vino || 
-      v.codigotexto === cata.codigotexto ||
       v.codigo?.toString() === cata.codigo_vino
     );
-    return vino?.nombre || `Muestra ${cata.codigo_vino || cata.codigotexto || 'Desconocida'}`;
+    return vino?.nombre || `Muestra ${cata.codigo_vino || 'Desconocida'}`;
   };
 
   const getCalificacion = (puntos) => {

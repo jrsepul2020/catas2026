@@ -1,7 +1,7 @@
-import { createContext, useContext, useEffect, useState } from 'react';
-import { supabaseServices } from '@/api/supabaseClient';
-
-const AuthContext = createContext({});
+import { useEffect, useState } from 'react';
+import { supabaseServices } from '../api/supabaseClient';
+import PropTypes from 'prop-types';
+import { AuthContext } from '../contexts/AuthContext';
 
 export function AuthProvider({ children }) {
   const [catador, setCatador] = useState(null);
@@ -121,12 +121,8 @@ export function AuthProvider({ children }) {
   );
 }
 
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth debe usarse dentro de AuthProvider');
-  }
-  return context;
-}
+AuthProvider.propTypes = {
+  children: PropTypes.node.isRequired
+};
 
 export default AuthProvider;

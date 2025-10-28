@@ -4,37 +4,10 @@
   "installCommand": "npm install",
   "devCommand": "npm run dev",
   "framework": "vite",
-  "routes": [
+  "rewrites": [
     {
-      "src": "/manifest.json",
-      "dest": "/manifest.json",
-      "headers": {
-        "Content-Type": "application/manifest+json"
-      }
-    },
-    {
-      "src": "/sw.js",
-      "dest": "/sw.js",
-      "headers": {
-        "Content-Type": "application/javascript",
-        "Service-Worker-Allowed": "/"
-      }
-    },
-    {
-      "src": "/offline.html",
-      "dest": "/offline.html"
-    },
-    {
-      "src": "/(.*\\.(js|css|ico|png|svg|jpg|jpeg|gif|webp|woff|woff2|ttf|eot|json))",
-      "dest": "/$1",
-      "headers": {
-        "Cache-Control": "public, max-age=31536000, immutable"
-      }
-    },
-    {
-      "src": "/[^.]+",
-      "dest": "/",
-      "status": 200
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ],
   "headers": [

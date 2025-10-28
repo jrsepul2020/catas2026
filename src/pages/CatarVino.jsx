@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { supabaseServices } from "@/api/supabaseClient";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Wine, ArrowRight, X, RotateCcw, Send } from "lucide-react";
 import { useNavigate } from "react-router-dom";

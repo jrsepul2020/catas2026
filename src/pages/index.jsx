@@ -14,8 +14,6 @@ import Catadores from "./Catadores";
 
 import Mesas from "./Mesas";
 
-import Login from "./Login";
-
 import Welcome from "./Welcome";
 
 import Configuracion from "./Configuracion";

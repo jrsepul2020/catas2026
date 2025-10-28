@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import WelcomeCard from "../components/dashboard/WelcomeCard";
 import StatCard from "../components/dashboard/StatCard";
 import QuickActions from "../components/dashboard/QuickActions";
+import TestSupabase from "../components/TestSupabase";
 import { Users, Activity, TrendingUp, Clock } from "lucide-react";
 
 export default function Dashboard() {
@@ -116,6 +117,9 @@ export default function Dashboard() {
       >
         <QuickActions />
       </motion.div>
+
+      {/* Componente temporal de prueba */}
+      <TestSupabase />
     </div>
   );
 }

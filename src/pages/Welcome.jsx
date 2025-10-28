@@ -1,4 +1,4 @@
-import { useAuth } from "@/components/AuthProvider.jsx";
+import { useAuth } from "@/hooks/useAuth.js";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

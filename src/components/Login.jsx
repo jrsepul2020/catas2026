@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PropTypes from 'prop-types';
 import { supabaseServices } from "@/api/supabaseClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,7 +28,8 @@ export default function Login({ onLoginSuccess }) {
         onLoginSuccess(user);
       }
     } catch (error) {
-      toast.error(error.message || "Error en la autenticación");
+      const errorMsg = error?.message || "Error en la autenticación";
+      toast.error(errorMsg);
       console.error("Error de autenticación:", error);
     } finally {
       setIsLoading(false);
@@ -50,6 +52,7 @@ export default function Login({ onLoginSuccess }) {
         await supabaseServices.auth.signUp("demo@virtus.com", "demo123456");
         toast.info("Usuario demo creado. Inicia sesión nuevamente.");
       } catch (signUpError) {
+        console.error("Error creando usuario demo:", signUpError);
         toast.error("Error creando usuario demo");
       }
     } finally {
@@ -185,3 +188,7 @@ export default function Login({ onLoginSuccess }) {
     </div>
   );
 }
+
+Login.propTypes = {
+  onLoginSuccess: PropTypes.func.isRequired
+};

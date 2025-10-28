@@ -78,7 +78,7 @@ export const supabaseServices = {
           // NO cambiar el campo activo original, mantener el valor real de la base de datos
           orden: item.codigo,                   // Usar codigo como orden
           // Asegurar que codigo sea string
-          codigo: item.codigotexto || item.codigo?.toString() || item.codigo
+          codigo: item.codigo?.toString() || item.codigo
         }))
         
         return mappedData
@@ -128,7 +128,7 @@ export const supabaseServices = {
           // NO cambiar el campo activo original, mantener el valor real de la base de datos
           orden: item.codigo,                   // Usar codigo como orden
           // Mantener el codigo como string si es necesario
-          codigo: item.codigotexto || item.codigo?.toString() || item.codigo
+          codigo: item.codigo?.toString() || item.codigo
         }))
         
         return mappedData
@@ -196,7 +196,7 @@ export const supabaseServices = {
           ...item,
           // Mapear campos para compatibilidad
           vino_id: item.id,           // usar id como vino_id
-          codigo_vino: item.codigotexto?.toString() || item.id,
+          codigo_vino: item.codigo?.toString() || item.id,
           catador_numero: 1,          // valor por defecto
           
           // Mapear puntuaciones individuales a categorías de cata
@@ -258,7 +258,7 @@ export const supabaseServices = {
         const mappedData = (data || []).map(item => ({
           ...item,
           vino_id: item.id,
-          codigo_vino: item.codigotexto?.toString() || item.id,
+          codigo_vino: item.codigo?.toString() || item.id,
           catador_numero: 1,
           
           vista_limpidez: Math.floor((item.p1 || 0) * 0.2),
@@ -295,7 +295,7 @@ export const supabaseServices = {
           activo: !cataData.descartado,       // invertir lógica descartado
           cerrado: false,                     
           timestamp: new Date().toISOString(),
-          codigotexto: parseInt(cataData.codigo_vino) || Date.now(),
+          codigo: parseInt(cataData.codigo_vino) || Date.now(),
           
           // Mapear puntuaciones detalladas a tu sistema de 5 puntos
           p1: (cataData.vista_limpidez || 0) + (cataData.vista_color || 0),
@@ -331,7 +331,7 @@ export const supabaseServices = {
         return {
           ...result,
           vino_id: result.id,
-          codigo_vino: result.codigotexto?.toString(),
+          codigo_vino: result.codigo?.toString(),
           puntos_totales: result.puntos,
           descartado: !result.activo,
           created_by: 'sistema',
@@ -430,6 +430,7 @@ export const supabaseServices = {
           // En un sistema real, aquí verificarías el hash de la contraseña
           // Por simplicidad, asumimos que el password coincide si el catador existe
           // TODO: Implementar verificación real de password con bcrypt
+          console.log('Password provided:', password); // Para evitar warning de variable no usada
           
           // Generar session ID
           const sessionId = `session_${catador.id}_${Date.now()}`

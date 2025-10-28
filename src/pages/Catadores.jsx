@@ -31,10 +31,14 @@ export default function Catadores() {
         const { data, error } = await supabase
           .from('catadores')
           .select('*')
-          .order('codigo');
+          .order('id');
         
-        if (error) throw error;
+        if (error) {
+          console.error('❌ Error específico catadores:', error);
+          throw error;
+        }
         console.log('✅ Catadores cargados:', data?.length || 0);
+        console.log('📋 Datos de catadores:', data);
         return data || [];
       } catch (err) {
         console.error('❌ Error cargando catadores:', err);

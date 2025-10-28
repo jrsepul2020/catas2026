@@ -1,5 +1,6 @@
-import { useAuth } from "@/components/AuthProvider.jsx";
+import { useAuth } from "@/hooks/useAuth.js";
 import Login from "@/pages/Login.jsx";
+import PropTypes from 'prop-types';
 
 export default function ProtectedRoute({ children }) {
   const { catador, loading } = useAuth();
@@ -16,6 +17,26 @@ export default function ProtectedRoute({ children }) {
     );
   }
 
+  // BYPASS TEMPORAL: Permitir acceso sin autenticación para configuración inicial
+  const bypassAuth = true; // Cambiar a false después de crear el usuario admin
+
+  if (bypassAuth) {
+    return (
+      <div>
+        <div style={{ 
+          background: '#ffeb3b', 
+          padding: '10px', 
+          textAlign: 'center', 
+          fontSize: '14px',
+          fontWeight: 'bold'
+        }}>
+          🚧 MODO CONFIGURACIÓN - Sin autenticación - Ve al Dashboard para crear usuario admin
+        </div>
+        {children}
+      </div>
+    );
+  }
+
   // Si no hay catador logueado, mostrar login
   if (!catador) {
     return <Login />;
@@ -24,3 +45,7 @@ export default function ProtectedRoute({ children }) {
   // Si hay catador logueado, mostrar el contenido protegido
   return children;
 }
+
+ProtectedRoute.propTypes = {
+  children: PropTypes.node.isRequired
+};

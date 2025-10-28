@@ -3,8 +3,9 @@
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Wine, LayoutDashboard, ClipboardList, LogOut, Download, Menu, Layers, Package, Settings, Users, MapPin, Home } from "lucide-react";
+import PropTypes from 'prop-types';
 import { useState } from "react";
-import { useAuth } from "@/components/AuthProvider.jsx";
+import { useAuth } from "@/hooks/useAuth.js";
 import {
   Sidebar,
   SidebarContent,
@@ -69,7 +70,7 @@ const navigationItems = [
   },
 ];
 
-export default function Layout({ children, currentPageName }) {
+export default function Layout({ children }) {
   const location = useLocation();
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstallButton, setShowInstallButton] = useState(false);
@@ -262,4 +263,8 @@ export default function Layout({ children, currentPageName }) {
     </SidebarProvider>
   );
 }
+
+Layout.propTypes = {
+  children: PropTypes.node.isRequired
+};
 

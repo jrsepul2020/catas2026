@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card";
+import PropTypes from 'prop-types';
 
 const categorias = [
   {
@@ -54,7 +54,7 @@ export default function CategoriasCata({ puntuaciones, setPuntuaciones }) {
       {categorias.map((categoria, idx) => (
         <div key={idx} className={`rounded-lg ${categoria.bgColor} p-1`}>
           <div className="space-y-1">
-            {categoria.items.map((item, itemIdx) => (
+            {categoria.items.map((item) => (
               <div key={item.key} className="flex items-center justify-end gap-1.5">
                 {/* Título de categoría inline en primera fila */}
                 {item.mostrarTitulo && (
@@ -101,3 +101,8 @@ export default function CategoriasCata({ puntuaciones, setPuntuaciones }) {
     </div>
   );
 }
+
+CategoriasCata.propTypes = {
+  puntuaciones: PropTypes.object.isRequired,
+  setPuntuaciones: PropTypes.func.isRequired
+};

@@ -23,10 +23,14 @@ export default function Muestras() {
         const { data, error } = await supabase
           .from('muestras')
           .select('*')
-          .order('codigotexto');
+          .order('id');
         
-        if (error) throw error;
+        if (error) {
+          console.error('❌ Error específico:', error);
+          throw error;
+        }
         console.log('✅ Muestras cargadas:', data?.length || 0);
+        console.log('📋 Datos de muestras:', data);
         return data || [];
       } catch (err) {
         console.error('❌ Error cargando muestras:', err);
@@ -248,9 +252,9 @@ export default function Muestras() {
               <TableBody>
                 {muestrasFiltradas.map((muestra) => (
                   <TableRow key={muestra.id} className="hover:bg-[#333951]/5">
-                    {/* Código Texto */}
+                    {/* Código */}
                     <TableCell className="font-mono text-sm md:text-base font-bold text-[#333951]">
-                      {muestra.codigotexto || muestra.codigo || '-'}
+                      {muestra.codigo || '-'}
                     </TableCell>
                     
                     {/* Nombre */}
