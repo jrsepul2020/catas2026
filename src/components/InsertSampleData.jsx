@@ -3,13 +3,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { Database, Trash2, Users, Building, Wine, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
-import { insertSampleData, clearSampleData } from '@/utils/insertSampleDataAdaptive';
+import { Database, Trash2, Users, Building, Wine, AlertCircle, CheckCircle, Loader2, Search } from 'lucide-react';
+import { insertSampleData, clearSampleData, inspectDatabaseSchema } from '@/utils/insertSampleDataDetective';
 
 const InsertSampleData = () => {
   const [isInserting, setIsInserting] = useState(false);
   const [isClearing, setIsClearing] = useState(false);
+  const [isInspecting, setIsInspecting] = useState(false);
   const [result, setResult] = useState(null);
+  const [inspectionResult, setInspectionResult] = useState(null);
   const [alert, setAlert] = useState({ show: false, message: '', type: 'info' });
 
   const showAlert = (message, type) => {
@@ -63,6 +65,20 @@ const InsertSampleData = () => {
       showAlert(`Error eliminando datos: ${error.message}`, 'error');
     } finally {
       setIsClearing(false);
+    }
+  };
+
+  const handleInspectDatabase = async () => {
+    setIsInspecting(true);
+    
+    try {
+      const inspection = await inspectDatabaseSchema();
+      setInspectionResult(inspection);
+      showAlert('Inspección de base de datos completada', 'success');
+    } catch (error) {
+      showAlert(`Error inspeccionando base de datos: ${error.message}`, 'error');
+    } finally {
+      setIsInspecting(false);
     }
   };
 
@@ -160,10 +176,29 @@ const InsertSampleData = () => {
       </Card>
 
       {/* Botones de acción */}
-      <div className="flex gap-4 justify-center mb-6">
+      <div className="flex gap-4 justify-center mb-6 flex-wrap">
+        <Button
+          onClick={handleInspectDatabase}
+          disabled={isInserting || isClearing || isInspecting}
+          variant="outline"
+          className="px-6 py-3"
+        >
+          {isInspecting ? (
+            <>
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              Inspeccionando...
+            </>
+          ) : (
+            <>
+              <Search className="h-4 w-4 mr-2" />
+              Inspeccionar BD
+            </>
+          )}
+        </Button>
+
         <Button
           onClick={handleInsertData}
-          disabled={isInserting || isClearing}
+          disabled={isInserting || isClearing || isInspecting}
           className="bg-[#333951] hover:bg-[#333951]/90 text-white px-8 py-3"
         >
           {isInserting ? (
@@ -181,7 +216,7 @@ const InsertSampleData = () => {
 
         <Button
           onClick={handleClearData}
-          disabled={isInserting || isClearing}
+          disabled={isInserting || isClearing || isInspecting}
           variant="destructive"
           className="px-8 py-3"
         >
@@ -249,6 +284,91 @@ const InsertSampleData = () => {
                   </ul>
                 </div>
               )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Resultados de inspección */}
+      {inspectionResult && (
+        <Card className="mb-6 border-blue-200 bg-blue-50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-blue-700">
+              <Search className="h-5 w-5" />
+              Estructura de Base de Datos
+            </CardTitle>
+            <CardDescription className="text-blue-600">
+              Información detectada automáticamente de tus tablas
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {Object.entries(inspectionResult).map(([tableName, info]) => (
+                <div key={tableName} className="bg-white rounded-lg p-4 border border-blue-200">
+                  <h4 className="font-semibold text-blue-800 mb-2">
+                    📋 {tableName}
+                  </h4>
+                  
+                  {info.exists ? (
+                    <div>
+                      <p className="text-sm text-blue-700 mb-2">
+                        <strong>Estado:</strong> ✅ Accesible ({info.method})
+                      </p>
+                      
+                      {info.columns && info.columns.length > 0 && (
+                        <div>
+                          <p className="text-sm font-medium text-blue-800 mb-1">
+                            Columnas detectadas ({info.columns.length}):
+                          </p>
+                          <div className="flex flex-wrap gap-1">
+                            {info.columns.map((column) => (
+                              <span 
+                                key={column} 
+                                className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded font-mono"
+                              >
+                                {column}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {info.requiredFields && info.requiredFields.length > 0 && (
+                        <div className="mt-2">
+                          <p className="text-sm font-medium text-orange-800 mb-1">
+                            Campos requeridos:
+                          </p>
+                          <div className="flex flex-wrap gap-1">
+                            {info.requiredFields.map((field) => (
+                              <span 
+                                key={field} 
+                                className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded font-mono"
+                              >
+                                {field}*
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {info.count !== undefined && (
+                        <p className="text-xs text-blue-600 mt-2">
+                          Registros existentes: {info.count}
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <div>
+                      <p className="text-sm text-red-700">
+                        <strong>Estado:</strong> ❌ No accesible
+                      </p>
+                      <p className="text-xs text-red-600 mt-1">
+                        Error: {info.error}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>
