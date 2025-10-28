@@ -88,6 +88,61 @@ const InsertSampleData = () => {
     }
   };
 
+  const handleDiagnoseEmpresas = async () => {
+    setIsInspecting(true);
+    try {
+      // Diagnóstico específico para empresas
+      const { supabase } = await import('../api/supabaseClient.js');
+      
+      console.log('🔍 DIAGNÓSTICO ESPECÍFICO DE EMPRESAS');
+      console.log('═══════════════════════════════════════');
+      
+      // Test 1: Verificar acceso a la tabla
+      console.log('📋 Test 1: Verificar acceso a tabla empresas...');
+      const { data: testData, error: testError } = await supabase
+        .from('empresas')
+        .select('*')
+        .limit(1);
+      
+      console.log('- Datos existentes:', testData);
+      console.log('- Error de acceso:', testError?.message || 'Sin error');
+      
+      // Test 2: Intentar inserción mínima
+      console.log('📋 Test 2: Intentar inserción mínima...');
+      const { data: insertData, error: insertError } = await supabase
+        .from('empresas')
+        .insert({ test_diagnostic: 'test' })
+        .select();
+      
+      console.log('- Resultado inserción:', insertData);
+      console.log('- Error inserción:', insertError?.message || 'Sin error');
+      
+      // Test 3: Probar campos comunes
+      const commonFields = ['nombre', 'name', 'empresa', 'razon_social', 'denominacion'];
+      console.log('📋 Test 3: Probar campos comunes...');
+      
+      for (const field of commonFields) {
+        try {
+          const { error } = await supabase
+            .from('empresas')
+            .insert({ [field]: `Test ${field}` })
+            .select();
+          
+          console.log(`- Campo '${field}':`, error ? `❌ ${error.message}` : '✅ Funciona');
+        } catch (err) {
+          console.log(`- Campo '${field}': ❌ Error - ${err.message}`);
+        }
+      }
+      
+      showAlert('Diagnóstico de empresas completado. Ver consola para detalles.', 'info');
+    } catch (error) {
+      console.error('Error en diagnóstico:', error);
+      showAlert(`Error en diagnóstico: ${error.message}`, 'error');
+    } finally {
+      setIsInspecting(false);
+    }
+  };
+
   return (
     <div className="container mx-auto p-6 max-w-4xl">
       <div className="flex items-center gap-3 mb-6">
@@ -206,6 +261,16 @@ const InsertSampleData = () => {
               Inspeccionar BD
             </>
           )}
+        </Button>
+
+        <Button
+          onClick={handleDiagnoseEmpresas}
+          disabled={isInserting || isClearing || isInspecting}
+          variant="outline"
+          className="px-6 py-3 border-orange-300 text-orange-700 hover:bg-orange-50"
+        >
+          <Building className="h-4 w-4 mr-2" />
+          Diagnosticar Empresas
         </Button>
 
         <Button

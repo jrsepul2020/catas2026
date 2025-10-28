@@ -96,7 +96,35 @@ async function tryMinimalInsert(tableName, baseData) {
     ...(tableName === 'empresas' ? [
       { empresa: baseData.name || 'Test Empresa' },
       { razon_social: baseData.name || 'Test Empresa S.L.' },
-      { denominacion: baseData.name || 'Test Empresa' }
+      { denominacion: baseData.name || 'Test Empresa' },
+      { 
+        empresa: baseData.name || 'Test Empresa',
+        email: baseData.email || 'test@empresa.com'
+      },
+      { 
+        razon_social: baseData.name || 'Test Empresa S.L.',
+        email: baseData.email || 'test@empresa.com'
+      },
+      { 
+        denominacion: baseData.name || 'Test Empresa',
+        email: baseData.email || 'test@empresa.com'
+      },
+      { 
+        nombre_empresa: baseData.name || 'Test Empresa',
+        email_empresa: baseData.email || 'test@empresa.com'
+      },
+      { 
+        nombre_comercial: baseData.name || 'Test Empresa',
+        contacto: baseData.email || 'test@empresa.com'
+      },
+      {
+        company_name: baseData.name || 'Test Empresa',
+        company_email: baseData.email || 'test@empresa.com'
+      },
+      {
+        business_name: baseData.name || 'Test Empresa',
+        contact_email: baseData.email || 'test@empresa.com'
+      }
     ] : []),
     
     ...(tableName === 'muestras' ? [
@@ -236,7 +264,33 @@ export async function insertSampleData() {
       results[tableName] = successCount;
       
       if (successCount === 0) {
-        results.errors.push(`${tableName}: No se pudo insertar ningún registro de ${totalAttempts} intentados`);
+        console.log(`💥 ${tableName} - FALLO TOTAL: 0/${totalAttempts} registros insertados`);
+        console.log(`🔍 ${tableName} - Info de tabla:`, JSON.stringify(tableInfo, null, 2));
+        
+        // Diagnóstico específico para empresas
+        if (tableName === 'empresas') {
+          console.log(`🏢 DIAGNÓSTICO EMPRESAS:`);
+          console.log(`- Columnas detectadas:`, tableInfo.columns || 'Sin información');
+          console.log(`- Método de detección:`, tableInfo.method || 'Sin método');
+          console.log(`- Existe tabla:`, tableInfo.exists);
+          
+          // Intentar inserción diagnóstica
+          try {
+            const { error: diagError } = await supabase
+              .from('empresas')
+              .insert({ test_field: 'diagnostic' })
+              .select();
+            
+            if (diagError) {
+              console.log(`🔍 Error diagnóstico empresas:`, diagError.message);
+              results.errors.push(`empresas: Error de schema - ${diagError.message}`);
+            }
+          } catch (err) {
+            console.log(`🔍 Error en diagnóstico empresas:`, err.message);
+          }
+        }
+        
+        results.errors.push(`${tableName}: No se pudo insertar ningún registro`);
       } else if (successCount < totalAttempts) {
         results.errors.push(`${tableName}: Solo se insertaron ${successCount} de ${totalAttempts} registros`);
       } else {
