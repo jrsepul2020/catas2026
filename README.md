@@ -1,101 +1,185 @@
-# Aplicación de Catas de Vino
+# 🍷 VIRTUS - Wine Management System
 
-Esta aplicación fue migrada de Base44 a Supabase. Es una aplicación Vite+React para gestionar catas de vino profesionales.
+Un sistema completo de gestión de catas de vino con interfaz moderna y funcionalidades avanzadas.
 
-## 🚀 Configuración inicial
+![VIRTUS Preview](https://via.placeholder.com/800x400/333951/ffffff?text=VIRTUS+Wine+Management)
 
-### 1. Instalar dependencias
+## ✨ Características
+
+- 📊 Dashboard con estadísticas en tiempo real
+- 🍷 Interfaz interactiva para catar vinos
+- 📝 Historial completo de catas
+- 📦 Organización de muestras por tandas
+- 🔍 Búsqueda y filtrado avanzado
+- 🎨 Sistema de temas personalizable
+- � Diseño responsive para todos los dispositivos
+- 🔐 Autenticación segura con Supabase
+
+## 🚀 Tech Stack
+
+- **Frontend**: React 18 + Vite
+- **Backend**: Supabase (PostgreSQL)
+- **Styling**: Tailwind CSS + Radix UI
+- **State Management**: TanStack Query
+- **Authentication**: Supabase Auth
+- **Deployment**: Vercel
+
+## 📦 Instalación Local
+
+### Prerrequisitos
+- Node.js 18+ 
+- npm o yarn
+- Cuenta en Supabase
+
+### Pasos
+
+1. **Clona el repositorio**
+```bash
+git clone https://github.com/jrsepul2020/catas2026.git
+cd catas2026
+```
+
+2. **Instala las dependencias**
 ```bash
 npm install
 ```
 
-### 2. Configurar Supabase
-1. Crea un proyecto en [Supabase](https://supabase.com)
-2. Copia `.env.example` a `.env`
-3. Completa las variables de entorno con tus datos de Supabase:
-   ```
-   VITE_SUPABASE_URL=https://tu-proyecto.supabase.co
-   VITE_SUPABASE_ANON_KEY=tu-clave-anonima
-   ```
+3. **Configura las variables de entorno**
+```bash
+# Copia el archivo de ejemplo
+cp .env.example .env
 
-### 3. Crear las tablas en Supabase
-Ejecuta en el SQL Editor de Supabase:
-- Para desarrollo fácil: `supabase-simple-schema.sql` (sin autenticación)
-- Para producción: `supabase-schema.sql` (con seguridad completa)
+# Edita .env con tus credenciales de Supabase
+VITE_SUPABASE_URL=tu_supabase_url
+VITE_SUPABASE_ANON_KEY=tu_supabase_anon_key
+```
 
-### 4. Ejecutar la aplicación
+4. **Ejecuta el proyecto**
 ```bash
 npm run dev
 ```
 
-## 📊 Características
+El proyecto estará disponible en `http://localhost:5173`
 
-- **Catas de vino**: Sistema completo de evaluación sensorial
-- **Gestión de vinos**: Catálogo con códigos y orden de cata
-- **Puntuación**: Sistema de 100 puntos con categorías
-- **Historial**: Registro completo de todas las catas
-- **Responsivo**: Funciona en móviles, tablets y desktop
+## 🌐 Despliegue en Vercel
 
-## 🛠️ Tecnologías
+### Opción 1: Desde GitHub (Recomendado)
 
-- **Frontend**: React 18 + Vite
-- **UI**: Tailwind CSS + Radix UI
-- **Base de datos**: Supabase (PostgreSQL)
-- **Estado**: TanStack Query (React Query)
-- **Autenticación**: Supabase Auth (opcional)
+1. **Conecta tu repositorio a Vercel**
+   - Ve a [Vercel Dashboard](https://vercel.com/dashboard)
+   - Haz clic en "New Project"
+   - Selecciona este repositorio desde GitHub
 
-## 📁 Estructura del proyecto
+2. **Configura las variables de entorno en Vercel**
+   - En Project Settings → Environment Variables
+   - Añade las siguientes variables:
+     ```
+     VITE_SUPABASE_URL=https://cfpawqoegitgtsjygbqp.supabase.co
+     VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmcGF3cW9lZ2l0Z3RzanlnYnFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk1OTkwNTEsImV4cCI6MjA3NTE3NTA1MX0.Ry3ufMVvFCaMafRrJpUkSafUuP-RnlSXAZ1z0wGdZNo
+     ```
 
+3. **Despliega**
+   - Vercel detectará automáticamente que es un proyecto Vite
+   - El despliegue se iniciará automáticamente
+   - Tu app estará disponible en una URL personalizada
+
+### Opción 2: Desde CLI
+
+```bash
+# Instala Vercel CLI
+npm i -g vercel
+
+# Despliega
+vercel --prod
 ```
-src/
-├── api/                 # Clientes de API
-│   ├── supabaseClient.js   # Cliente principal de Supabase
-│   └── entities.js         # Exportaciones de entidades
-├── components/          # Componentes React
-│   ├── ui/             # Componentes de UI base
-│   └── cata/           # Componentes específicos de cata
-├── pages/              # Páginas principales
-│   ├── CatarVino.jsx   # Interfaz de cata
-│   ├── MisCatas.jsx    # Historial de catas
-│   └── Dashboard.jsx   # Panel principal
-└── hooks/              # Custom hooks
+
+## 🗄️ Base de Datos (Supabase)
+
+### Tablas Requeridas
+
+El proyecto requiere las siguientes tablas en Supabase:
+
+#### Tabla `catas`
+```sql
+CREATE TABLE catas (
+  id SERIAL PRIMARY KEY,
+  fecha DATE NOT NULL,
+  vino_nombre VARCHAR(255) NOT NULL,
+  variedad VARCHAR(100),
+  anada INTEGER,
+  bodega VARCHAR(255),
+  region VARCHAR(255),
+  -- Evaluación visual
+  color VARCHAR(100),
+  intensidad_color INTEGER CHECK (intensidad_color >= 1 AND intensidad_color <= 10),
+  limpidez VARCHAR(100),
+  -- Evaluación olfativa  
+  intensidad_aromatica INTEGER CHECK (intensidad_aromatica >= 1 AND intensidad_aromatica <= 10),
+  aromas TEXT,
+  -- Evaluación gustativa
+  dulzor INTEGER CHECK (dulzor >= 1 AND dulzor <= 10),
+  acidez INTEGER CHECK (acidez >= 1 AND acidez <= 10),
+  taninos INTEGER CHECK (taninos >= 1 AND taninos <= 10),
+  alcohol INTEGER CHECK (alcohol >= 1 AND alcohol <= 10),
+  cuerpo INTEGER CHECK (cuerpo >= 1 AND cuerpo <= 10),
+  sabores TEXT,
+  -- Evaluación final
+  persistencia INTEGER CHECK (persistencia >= 1 AND persistencia <= 10),
+  calidad_general INTEGER CHECK (calidad_general >= 1 AND calidad_general <= 100),
+  notas TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
 ```
 
-## 🗄️ Esquema de base de datos
+#### Tabla `muestras`
+```sql
+CREATE TABLE muestras (
+  id SERIAL PRIMARY KEY,
+  codigo VARCHAR(50) UNIQUE NOT NULL,
+  nombre VARCHAR(255) NOT NULL,
+  descripcion TEXT,
+  tanda VARCHAR(100),
+  fecha_recepcion DATE,
+  estado VARCHAR(50) DEFAULT 'pendiente',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
 
-### Tabla `vinos`
-- Información básica de vinos para catar
-- Campos: nombre, código, activo, orden, tanda
+## 🎨 Personalización
 
-### Tabla `catas`
-- Registros de evaluaciones sensoriales
-- Puntuaciones por categoría (vista, olfato, sabor, juicio global)
-- Relación con vinos y usuario catador
+El sistema incluye un panel de configuración completo donde puedes:
+- Cambiar el esquema de colores
+- Ajustar la tipografía
+- Modificar el layout
+- Configurar preferencias de usuario
 
-## 🔧 Scripts disponibles
+## � PWA (Progressive Web App)
 
-- `npm run dev` - Servidor de desarrollo
-- `npm run build` - Build para producción
-- `npm run preview` - Vista previa del build
-- `npm run lint` - Linter ESLint
+La aplicación está configurada como PWA, lo que significa:
+- ✅ Instalable en dispositivos móviles
+- ✅ Funciona offline (caché básico)
+- ✅ Icono en pantalla de inicio
+- ✅ Optimizada para móviles
 
-## 📝 Migración desde Base44
+## 🤝 Contribución
 
-Esta aplicación fue migrada desde Base44 manteniendo toda la funcionalidad:
-- ✅ Interfaz de usuario idéntica
-- ✅ Misma lógica de negocio
-- ✅ Esquema de datos compatible
-- ✅ Funcionalidades completas
+1. Fork el proyecto
+2. Crea una rama para tu feature (`git checkout -b feature/nueva-funcionalidad`)
+3. Commit tus cambios (`git commit -am 'Añade nueva funcionalidad'`)
+4. Push a la rama (`git push origin feature/nueva-funcionalidad`)
+5. Abre un Pull Request
 
-Los archivos de configuración de Base44 se mantienen para referencia pero ya no se usan.
+## � Licencia
 
-## 🚨 Notas importantes
+Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
 
-1. **Variables de entorno**: No olvides configurar el archivo `.env`
-2. **Datos de prueba**: El schema incluye vinos de ejemplo
-3. **Seguridad**: Para producción, usar el schema con RLS habilitado
-4. **Desarrollo**: Para facilitar desarrollo, usar el schema simple sin autenticación
+## 🆘 Soporte
 
-## 📞 Soporte
+Si encuentras algún problema o tienes preguntas:
+1. Revisa los [Issues existentes](https://github.com/jrsepul2020/catas2026/issues)
+2. Crea un nuevo Issue si es necesario
+3. Contacta al mantenedor: @jrsepul2020
 
-Para preguntas sobre la migración o uso de la aplicación, revisa la documentación en `SUPABASE_SETUP.md`.
+---
+
+**Desarrollado con ❤️ para amantes del vino**
