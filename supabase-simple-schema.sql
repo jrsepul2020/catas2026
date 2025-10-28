@@ -1,0 +1,89 @@
+-- Esquema simplificado para desarrollo (SIN Row Level Security)
+-- Ejecuta estos comandos en el SQL Editor de tu dashboard de Supabase
+
+-- 1. Tabla de Vinos
+CREATE TABLE IF NOT EXISTS public.vinos (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    codigo VARCHAR(100) NOT NULL UNIQUE,
+    activo BOOLEAN DEFAULT true,
+    orden INTEGER DEFAULT 1,
+    tanda INTEGER DEFAULT 1,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 2. Tabla de Catas
+CREATE TABLE IF NOT EXISTS public.catas (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    vino_id UUID REFERENCES public.vinos(id) ON DELETE CASCADE,
+    codigo_vino VARCHAR(100) NOT NULL,
+    catador_numero INTEGER NOT NULL,
+    vista_limpidez INTEGER DEFAULT 0,
+    vista_color INTEGER DEFAULT 0,
+    olfato_limpidez INTEGER DEFAULT 0,
+    olfato_intensidad INTEGER DEFAULT 0,
+    olfato_calidad INTEGER DEFAULT 0,
+    sabor_limpio INTEGER DEFAULT 0,
+    sabor_intensidad INTEGER DEFAULT 0,
+    sabor_persistencia INTEGER DEFAULT 0,
+    sabor_calidad INTEGER DEFAULT 0,
+    juicio_global INTEGER DEFAULT 0,
+    puntos_totales INTEGER DEFAULT 0,
+    descartado BOOLEAN DEFAULT false,
+    tanda INTEGER DEFAULT 1,
+    orden INTEGER DEFAULT 1,
+    created_by VARCHAR(255),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 3. Desactivar Row Level Security para desarrollo fácil
+ALTER TABLE public.vinos DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.catas DISABLE ROW LEVEL SECURITY;
+
+-- 4. Función para actualizar updated_at automáticamente
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+-- 5. Triggers para actualizar updated_at
+DROP TRIGGER IF EXISTS update_vinos_updated_at ON public.vinos;
+CREATE TRIGGER update_vinos_updated_at BEFORE UPDATE ON public.vinos
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_catas_updated_at ON public.catas;
+CREATE TRIGGER update_catas_updated_at BEFORE UPDATE ON public.catas
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- 6. Índices para optimizar consultas
+CREATE INDEX IF NOT EXISTS idx_vinos_activo ON public.vinos(activo);
+CREATE INDEX IF NOT EXISTS idx_vinos_orden ON public.vinos(orden);
+CREATE INDEX IF NOT EXISTS idx_catas_vino_id ON public.catas(vino_id);
+CREATE INDEX IF NOT EXISTS idx_catas_created_by ON public.catas(created_by);
+CREATE INDEX IF NOT EXISTS idx_catas_created_at ON public.catas(created_at);
+
+-- 7. Limpiar datos existentes (opcional)
+-- DELETE FROM public.catas;
+-- DELETE FROM public.vinos;
+
+-- 8. Datos de ejemplo para vinos
+INSERT INTO public.vinos (nombre, codigo, activo, orden, tanda) VALUES
+    ('Cabernet Sauvignon Reserva 2020', 'CAB001', true, 1, 1),
+    ('Chardonnay Premium 2021', 'CHR002', true, 2, 1),
+    ('Malbec Gran Reserva 2019', 'MAL003', true, 3, 1),
+    ('Sauvignon Blanc Orgánico 2022', 'SAU004', true, 4, 2),
+    ('Pinot Noir Boutique 2020', 'PIN005', true, 5, 2),
+    ('Merlot Clásico 2021', 'MER006', true, 6, 2),
+    ('Syrah Roble Francés 2020', 'SYR007', true, 7, 3),
+    ('Rosé Premium 2022', 'ROS008', true, 8, 3)
+ON CONFLICT (codigo) DO NOTHING;
+
+-- 9. Verificar que las tablas se crearon correctamente
+SELECT 'Tabla vinos creada' as status, count(*) as registros FROM public.vinos
+UNION ALL
+SELECT 'Tabla catas creada' as status, count(*) as registros FROM public.catas;
