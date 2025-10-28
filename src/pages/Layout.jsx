@@ -244,11 +244,15 @@ export default function Layout({ children, currentPageName }) {
             {/* Botón de cerrar sesión */}
             <Button
               onClick={handleLogout}
-              variant="outline"
-              className="w-full border-white/20 text-white hover:bg-white/10 hover:text-white flex items-center justify-center gap-2"
+              variant="ghost"
+              className="w-full !text-white !border-white/20 hover:!bg-white/10 hover:!text-white flex items-center justify-center gap-2 border"
+              style={{
+                color: 'white !important',
+                borderColor: 'rgba(255, 255, 255, 0.2) !important'
+              }}
             >
-              <LogOut className="w-4 h-4" />
-              Cerrar Sesión
+              <LogOut className="w-4 h-4" style={{ color: 'white' }} />
+              <span style={{ color: 'white' }}>Cerrar Sesión</span>
             </Button>
           </SidebarFooter>
         </Sidebar>
