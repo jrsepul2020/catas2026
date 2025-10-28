@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Database, Trash2, Users, Building, Wine, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
-import { insertSampleData, clearSampleData } from '@/utils/insertSampleDataSimple';
+import { insertSampleData, clearSampleData } from '@/utils/insertSampleDataAdaptive';
 
 const InsertSampleData = () => {
   const [isInserting, setIsInserting] = useState(false);
@@ -27,7 +27,11 @@ const InsertSampleData = () => {
       
       if (response.success) {
         setResult(response);
-        showAlert('¡Datos de ejemplo insertados correctamente!', 'success');
+        if (response.errors && response.errors.length > 0) {
+          showAlert(`Inserción parcial completada. Errores: ${response.errors.join(', ')}`, 'warning');
+        } else {
+          showAlert('¡Datos de ejemplo insertados correctamente!', 'success');
+        }
       } else {
         showAlert(`Error: ${response.error}`, 'error');
       }
@@ -77,18 +81,22 @@ const InsertSampleData = () => {
         <Alert className={`mb-6 ${
           alert.type === 'success' ? 'border-green-500 bg-green-50' : 
           alert.type === 'error' ? 'border-red-500 bg-red-50' : 
+          alert.type === 'warning' ? 'border-orange-500 bg-orange-50' :
           'border-blue-500 bg-blue-50'
         }`}>
           {alert.type === 'success' ? (
             <CheckCircle className="h-4 w-4 text-green-600" />
           ) : (
             <AlertCircle className={`h-4 w-4 ${
-              alert.type === 'error' ? 'text-red-600' : 'text-blue-600'
+              alert.type === 'error' ? 'text-red-600' : 
+              alert.type === 'warning' ? 'text-orange-600' :
+              'text-blue-600'
             }`} />
           )}
           <AlertDescription className={
             alert.type === 'success' ? 'text-green-800' : 
             alert.type === 'error' ? 'text-red-800' : 
+            alert.type === 'warning' ? 'text-orange-800' :
             'text-blue-800'
           }>
             {alert.message}
@@ -230,6 +238,17 @@ const InsertSampleData = () => {
               <p className="text-xs text-green-600">
                 Puedes usar cualquier email de catador (ej: maria.rodriguez@catas2026.com) con esta contraseña para hacer login.
               </p>
+              
+              {result.errors && result.errors.length > 0 && (
+                <div className="mt-3 p-3 bg-orange-50 border border-orange-200 rounded">
+                  <h5 className="font-medium text-orange-800 mb-1">⚠️ Advertencias:</h5>
+                  <ul className="text-xs text-orange-700 space-y-1">
+                    {result.errors.map((error, index) => (
+                      <li key={index}>• {error}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
