@@ -17,13 +17,8 @@ export const supabaseServices = {
     async me() {
       const { data: { user }, error } = await supabase.auth.getUser()
       if (error) {
-        // Si no hay usuario autenticado, crear uno anónimo para desarrollo
-        const anonUser = {
-          id: 'anon-user',
-          email: 'anonimo@test.com',
-          user_metadata: { name: 'Usuario Anónimo' }
-        }
-        return anonUser
+        console.log('No hay usuario autenticado:', error.message)
+        return null
       }
       return user
     },
@@ -49,6 +44,19 @@ export const supabaseServices = {
     async signOut() {
       const { error } = await supabase.auth.signOut()
       if (error) throw error
+      return true
+    },
+
+    // Método para obtener el estado de la sesión
+    async getSession() {
+      const { data: { session }, error } = await supabase.auth.getSession()
+      if (error) throw error
+      return session
+    },
+
+    // Listener para cambios de autenticación
+    onAuthStateChange(callback) {
+      return supabase.auth.onAuthStateChange(callback)
     }
   },
 
@@ -349,6 +357,59 @@ export const supabaseServices = {
           .eq('id', id)
         
         if (error) throw error
+      }
+    },
+
+    Catador: {
+      async list(orderBy = 'codigo') {
+        const { data, error } = await supabase
+          .from('catadores')
+          .select('*')
+          .order(orderBy)
+        
+        if (error) throw error
+        return data || []
+      },
+
+      async listAll(orderBy = 'codigo') {
+        const { data, error } = await supabase
+          .from('catadores')
+          .select('*')
+          .order(orderBy)
+        
+        if (error) throw error
+        return data || []
+      },
+      
+      async create(catadorData) {
+        const { data, error } = await supabase
+          .from('catadores')
+          .insert(catadorData)
+          .select()
+        
+        if (error) throw error
+        return data[0]
+      },
+      
+      async update(id, catadorData) {
+        const { data, error } = await supabase
+          .from('catadores')
+          .update(catadorData)
+          .eq('id', id)
+          .select()
+        
+        if (error) throw error
+        return data[0]
+      },
+      
+      async delete(id) {
+        const { error } = await supabase
+          .from('catadores')
+          .delete()
+          .eq('id', id)
+        
+        if (error) throw error
+        return true
       }
     }
   }

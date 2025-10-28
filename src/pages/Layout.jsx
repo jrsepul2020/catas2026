@@ -2,9 +2,9 @@
 
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Wine, LayoutDashboard, ClipboardList, LogOut, Download, Menu, Layers, Package, Settings } from "lucide-react";
-import { useState, useEffect } from "react";
-import { supabaseServices } from "@/api/supabaseClient";
+import { Wine, LayoutDashboard, ClipboardList, LogOut, Download, Menu, Layers, Package, Settings, Users } from "lucide-react";
+import { useState } from "react";
+import { useAuth } from "@/components/AuthProvider.jsx";
 import {
   Sidebar,
   SidebarContent,
@@ -48,6 +48,11 @@ const navigationItems = [
     icon: Package,
   },
   {
+    title: "Catadores",
+    url: createPageUrl("Catadores"),
+    icon: Users,
+  },
+  {
     title: "Configuración",
     url: createPageUrl("Configuracion"),
     icon: Settings,
@@ -56,31 +61,9 @@ const navigationItems = [
 
 export default function Layout({ children, currentPageName }) {
   const location = useLocation();
-  const [user, setUser] = useState(null);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [showInstallButton, setShowInstallButton] = useState(true); // Siempre visible inicialmente
-
-  useEffect(() => {
-    supabaseServices.auth.me().then(setUser).catch(() => {});
-
-    // Detectar si la app es instalable
-    const handleBeforeInstallPrompt = (e) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-      setShowInstallButton(true);
-    };
-
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-
-    // Verificar si ya está instalada
-    if (window.matchMedia('(display-mode: standalone)').matches) {
-      setShowInstallButton(false);
-    }
-
-    return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    };
-  }, []);
+  const [showInstallButton, setShowInstallButton] = useState(false);
+  const { user, signOut } = useAuth();
 
   const handleInstallClick = async () => {
     if (!deferredPrompt) {
@@ -100,13 +83,8 @@ export default function Layout({ children, currentPageName }) {
 
   const handleLogout = async () => {
     try {
-      await supabaseServices.auth.signOut();
-      // Limpiar estado local
-      setUser(null);
-      // Opcional: mostrar mensaje de confirmación
+      await signOut();
       alert('Sesión cerrada correctamente');
-      // Redirigir o recargar
-      window.location.reload();
     } catch (error) {
       console.error('Error cerrando sesión:', error);
       alert('Error al cerrar sesión');

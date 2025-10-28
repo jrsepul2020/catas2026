@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Wine, Search, Filter, Package, Building, MapPin, Calendar, Grape } from "lucide-react";
+import { Wine, Search, Filter, Package, Building, Grape } from "lucide-react";
 
 
 export default function Muestras() {
@@ -221,11 +221,11 @@ export default function Muestras() {
         </CardContent>
       </Card>
 
-      {/* Tabla de muestras */}
+      {/* Tabla de muestras - Vista simplificada para cata */}
       <Card className="border-none shadow-lg">
         <CardHeader className="border-b bg-gradient-to-r from-[#333951]/5 to-[#333951]/10 p-3 md:p-6">
           <CardTitle className="text-base md:text-xl font-bold text-[#333951]">
-            Listado de Muestras ({muestrasFiltradas.length})
+            Muestras para Cata ({muestrasFiltradas.length})
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
@@ -233,193 +233,57 @@ export default function Muestras() {
             <Table>
               <TableHeader>
                 <TableRow className="bg-gray-50">
-                  <TableHead className="font-bold text-xs md:text-sm">ID/Código</TableHead>
-                  <TableHead className="font-bold text-xs md:text-sm">Información Básica</TableHead>
-                  <TableHead className="font-bold text-xs md:text-sm">Empresa/Productor</TableHead>
-                  <TableHead className="font-bold text-xs md:text-sm">Clasificación</TableHead>
-                  <TableHead className="font-bold text-xs md:text-sm">Procedencia</TableHead>
-                  <TableHead className="font-bold text-xs md:text-sm">Características Técnicas</TableHead>
-                  <TableHead className="font-bold text-xs md:text-sm">Stock/Inventario</TableHead>
-                  <TableHead className="font-bold text-xs md:text-sm">Fechas/Control</TableHead>
-                  <TableHead className="font-bold text-xs md:text-sm">Estados</TableHead>
+                  <TableHead className="font-bold text-sm md:text-base">Código Texto</TableHead>
+                  <TableHead className="font-bold text-sm md:text-base">Nombre</TableHead>
+                  <TableHead className="font-bold text-sm md:text-base">Categoría</TableHead>
+                  <TableHead className="font-bold text-sm md:text-base">Categoría de Cata</TableHead>
+                  <TableHead className="font-bold text-sm md:text-base">Tanda</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {muestrasFiltradas.map((muestra) => (
-                  <TableRow key={muestra.id} className="hover:bg-[#E8DEC9]/30">
-                    {/* ID/Código */}
-                    <TableCell className="font-mono text-xs md:text-sm font-medium">
-                      <div className="space-y-1">
-                        <p className="font-bold text-[#333951]">ID: {muestra.id}</p>
-                        <p className="font-bold">Código: {muestra.codigo}</p>
-                        {muestra.codigotexto && muestra.codigotexto !== muestra.codigo && (
-                          <p className="text-xs text-gray-500">Texto: {muestra.codigotexto}</p>
-                        )}
-                      </div>
+                  <TableRow key={muestra.id} className="hover:bg-[#333951]/5">
+                    {/* Código Texto */}
+                    <TableCell className="font-mono text-sm md:text-base font-bold text-[#333951]">
+                      {muestra.codigotexto || muestra.codigo || '-'}
                     </TableCell>
                     
-                    {/* Información Básica */}
-                    <TableCell className="text-xs md:text-sm">
-                      <div className="space-y-1">
-                        <p className="font-medium text-[#333951]">{muestra.nombre}</p>
-                        {muestra.año && (
-                          <p className="text-xs text-gray-600 flex items-center gap-1">
-                            <Calendar className="w-3 h-3" />
-                            Año: {muestra.año}
-                          </p>
-                        )}
-                        {muestra.tanda && (
-                          <Badge className="bg-blue-100 text-blue-800 border-blue-200 text-xs">
-                            Tanda: {muestra.tanda}
-                          </Badge>
-                        )}
-                      </div>
+                    {/* Nombre */}
+                    <TableCell className="text-sm md:text-base font-medium">
+                      {muestra.nombre || '-'}
                     </TableCell>
 
-                    {/* Empresa/Productor */}
-                    <TableCell className="text-xs md:text-sm">
-                      <div className="space-y-1">
-                        {muestra.empresa && (
-                          <p className="text-xs font-medium flex items-center gap-1">
-                            <Building className="w-3 h-3" />
-                            {muestra.empresa}
-                          </p>
-                        )}
-                        {muestra.ididempresa && (
-                          <p className="text-xs text-gray-500">
-                            ID Empresa: {muestra.ididempresa}
-                          </p>
-                        )}
-                      </div>
-                    </TableCell>
-
-                    {/* Clasificación */}
-                    <TableCell className="text-xs md:text-sm">
-                      <div className="space-y-1">
-                        {muestra.categoria && (
-                          <Badge variant="outline" className="text-xs block w-fit">
-                            {muestra.categoria}
-                          </Badge>
-                        )}
-                        {muestra.categoriadecata && (
-                          <Badge variant="secondary" className="text-xs block w-fit">
-                            Cata: {muestra.categoriadecata}
-                          </Badge>
-                        )}
-                        {muestra.categoriaoiv && (
-                          <Badge className="bg-purple-100 text-purple-800 border-purple-200 text-xs block w-fit">
-                            OIV: {muestra.categoriaoiv}
-                          </Badge>
-                        )}
-                      </div>
-                    </TableCell>
-
-                    {/* Procedencia */}
-                    <TableCell className="text-xs md:text-sm">
-                      <div className="space-y-1">
-                        {muestra.origen && (
-                          <p className="flex items-center gap-1 text-xs">
-                            <MapPin className="w-3 h-3" />
-                            {muestra.origen}
-                          </p>
-                        )}
-                        {muestra.pais && (
-                          <p className="text-xs text-gray-600">🌍 {muestra.pais}</p>
-                        )}
-                        {muestra.igp && (
-                          <p className="text-xs text-gray-500">IGP: {muestra.igp}</p>
-                        )}
-                      </div>
-                    </TableCell>
-
-                    {/* Características Técnicas */}
-                    <TableCell className="text-xs md:text-sm">
-                      <div className="space-y-1">
-                        {muestra.grado && (
-                          <p className="text-xs">🍷 {muestra.grado}% vol</p>
-                        )}
-                        {muestra.azucar && (
-                          <p className="text-xs">🍯 {muestra.azucar} g/L azúcar</p>
-                        )}
-                        {muestra.tipouva && (
-                          <p className="text-xs">🍇 {muestra.tipouva}</p>
-                        )}
-                        {muestra.tipoaceituna && (
-                          <p className="text-xs">🫒 {muestra.tipoaceituna}</p>
-                        )}
-                        {muestra.destilado && (
-                          <p className="text-xs">🥃 {muestra.destilado}</p>
-                        )}
-                      </div>
-                    </TableCell>
-
-                    {/* Stock/Inventario */}
-                    <TableCell className="text-xs md:text-sm">
-                      <div className="text-center space-y-1">
-                        <p className={`text-lg font-bold ${
-                          (muestra.existencias || 0) > 0 ? 'text-green-600' : 'text-red-600'
-                        }`}>
-                          {muestra.existencias || 0}
-                        </p>
-                        <p className="text-xs text-gray-500">unidades</p>
-                      </div>
-                    </TableCell>
-
-                    {/* Fechas/Control */}
-                    <TableCell className="text-xs md:text-sm">
-                      <div className="space-y-1">
-                        {muestra.fecha && (
-                          <p className="text-xs">
-                            📅 {new Date(muestra.fecha).toLocaleDateString('es-ES')}
-                          </p>
-                        )}
-                        {muestra.creada && (
-                          <p className="text-xs text-gray-500">
-                            ⏰ {new Date(muestra.creada).toLocaleDateString('es-ES')}
-                          </p>
-                        )}
-                        {muestra.created_at && muestra.created_at !== muestra.creada && (
-                          <p className="text-xs text-gray-400">
-                            📝 {new Date(muestra.created_at).toLocaleDateString('es-ES')}
-                          </p>
-                        )}
-                        {muestra["modificada en"] && (
-                          <p className="text-xs text-blue-600">
-                            ✏️ {new Date(muestra["modificada en"]).toLocaleDateString('es-ES')}
-                          </p>
-                        )}
-                      </div>
-                    </TableCell>
-
-                    {/* Estados */}
-                    <TableCell>
-                      <div className="flex flex-col gap-1">
-                        <Badge
-                          className={`text-xs w-fit ${
-                            muestra.activo
-                              ? 'bg-green-100 text-green-800 border-green-200'
-                              : 'bg-red-100 text-red-800 border-red-200'
-                          }`}
-                        >
-                          {muestra.activo ? 'Activa' : 'Inactiva'}
+                    {/* Categoría */}
+                    <TableCell className="text-sm md:text-base">
+                      {muestra.categoria ? (
+                        <Badge variant="outline" className="text-sm">
+                          {muestra.categoria}
                         </Badge>
-                        {muestra.pagada && (
-                          <Badge className="text-xs bg-blue-100 text-blue-800 border-blue-200 w-fit">
-                            Pagada ✓
-                          </Badge>
-                        )}
-                        {muestra.manual && (
-                          <Badge className="text-xs bg-purple-100 text-purple-800 border-purple-200 w-fit">
-                            Manual ✏️
-                          </Badge>
-                        )}
-                      </div>
+                      ) : '-'}
+                    </TableCell>
+
+                    {/* Categoría de Cata */}
+                    <TableCell className="text-sm md:text-base">
+                      {muestra.categoriadecata ? (
+                        <Badge className="bg-[#333951] text-white text-sm">
+                          {muestra.categoriadecata}
+                        </Badge>
+                      ) : '-'}
+                    </TableCell>
+
+                    {/* Tanda */}
+                    <TableCell className="text-sm md:text-base">
+                      {muestra.tanda ? (
+                        <Badge className="bg-blue-100 text-blue-800 border-blue-200 text-sm">
+                          {muestra.tanda}
+                        </Badge>
+                      ) : '-'}
                     </TableCell>
                   </TableRow>
                 ))}
                 {muestrasFiltradas.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={9} className="text-center py-8 text-gray-500">
+                    <TableCell colSpan={5} className="text-center py-8 text-gray-500">
                       {filtroTexto || filtroCategoria || filtroEstado !== "todas" 
                         ? "No se encontraron muestras con los filtros aplicados"
                         : "No hay muestras registradas"

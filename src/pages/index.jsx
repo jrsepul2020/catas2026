@@ -10,6 +10,8 @@ import Tandas from "./Tandas";
 
 import Muestras from "./Muestras";
 
+import Catadores from "./Catadores";
+
 import Configuracion from "./Configuracion";
 
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
@@ -25,6 +27,8 @@ const PAGES = {
     Tandas: Tandas,
     
     Muestras: Muestras,
+    
+    Catadores: Catadores,
     
     Configuracion: Configuracion,
     
@@ -64,6 +68,8 @@ function PagesContent() {
                 <Route path="/Tandas" element={<Tandas />} />
                 
                 <Route path="/Muestras" element={<Muestras />} />
+                
+                <Route path="/Catadores" element={<Catadores />} />
                 
                 <Route path="/Configuracion" element={<Configuracion />} />
             </Routes>
