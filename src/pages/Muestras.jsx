@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { supabaseServices } from "@/api/supabaseClient";
+import { supabase } from "@/api/supabaseClient";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -14,15 +14,20 @@ export default function Muestras() {
   const [filtroCategoria, setFiltroCategoria] = useState("");
   const [filtroEstado, setFiltroEstado] = useState("todas");
 
-  // Obtener TODAS las muestras sin filtros
+  // Obtener TODAS las muestras directamente desde Supabase
   const { data: muestras = [], isLoading, error } = useQuery({
     queryKey: ['muestras'],
     queryFn: async () => {
       try {
-        console.log('🔍 Cargando muestras...');
-        const result = await supabaseServices.entities.Vino.listAll();
-        console.log('✅ Muestras cargadas:', result?.length || 0);
-        return result || [];
+        console.log('🔍 Cargando muestras desde Supabase...');
+        const { data, error } = await supabase
+          .from('muestras')
+          .select('*')
+          .order('codigotexto');
+        
+        if (error) throw error;
+        console.log('✅ Muestras cargadas:', data?.length || 0);
+        return data || [];
       } catch (err) {
         console.error('❌ Error cargando muestras:', err);
         throw err;

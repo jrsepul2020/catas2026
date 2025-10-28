@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { supabaseServices } from "@/api/supabaseClient";
+import { supabase } from "@/api/supabaseClient";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -22,15 +22,20 @@ export default function Catadores() {
   const puestos = Array.from({length: 8}, (_, i) => `Puesto ${i + 1}`);
   const tablets = Array.from({length: 50}, (_, i) => `Tablet ${String(i + 1).padStart(2, '0')}`);
 
-  // Obtener catadores desde Supabase
+  // Obtener catadores directamente desde Supabase
   const { data: catadores = [], isLoading, error } = useQuery({
     queryKey: ['catadores'],
     queryFn: async () => {
       try {
         console.log('🔍 Cargando catadores desde Supabase...');
-        const result = await supabaseServices.entities.Catador.listAll();
-        console.log('✅ Catadores cargados:', result?.length || 0);
-        return result || [];
+        const { data, error } = await supabase
+          .from('catadores')
+          .select('*')
+          .order('codigo');
+        
+        if (error) throw error;
+        console.log('✅ Catadores cargados:', data?.length || 0);
+        return data || [];
       } catch (err) {
         console.error('❌ Error cargando catadores:', err);
         throw err;
@@ -42,9 +47,16 @@ export default function Catadores() {
   const updateCatadorMutation = useMutation({
     mutationFn: async ({ id, updates }) => {
       console.log('🔄 Actualizando catador en Supabase:', id, updates);
-      const result = await supabaseServices.entities.Catador.update(id, updates);
-      console.log('✅ Catador actualizado:', result);
-      return result;
+      const { data, error } = await supabase
+        .from('catadores')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      console.log('✅ Catador actualizado:', data);
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['catadores']);
