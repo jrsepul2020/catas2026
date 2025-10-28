@@ -1,7 +1,7 @@
 import { supabase } from '../api/supabaseClient.js';
 import bcrypt from 'bcryptjs';
 
-// Datos de ejemplo para empresas
+// Datos de ejemplo para empresas (usando solo campos básicos)
 const empresasData = [
   {
     nombre: 'Bodegas Rioja Alta',
@@ -13,7 +13,6 @@ const empresasData = [
     email: 'contacto@riojalta.com',
     cif: 'A26123456',
     representante: 'Carlos Martínez',
-    activo: true,
     notas: 'Bodega centenaria especializada en Rioja Reserva y Gran Reserva'
   },
   {
@@ -26,7 +25,6 @@ const empresasData = [
     email: 'info@vinosduero.es',
     cif: 'B47987654',
     representante: 'Ana García López',
-    activo: true,
     notas: 'Productores de vinos D.O. Ribera del Duero'
   },
   {
@@ -39,7 +37,6 @@ const empresasData = [
     email: 'ventas@cellerscatalanes.cat',
     cif: 'A08345678',
     representante: 'Josep Torrents',
-    activo: true,
     notas: 'Especialistas en vinos del Penedès y cavas'
   },
   {
@@ -52,7 +49,6 @@ const empresasData = [
     email: 'contacto@bodegasandaluzas.es',
     cif: 'A11456789',
     representante: 'Manuel Rodríguez',
-    activo: true,
     notas: 'Productores de jerez y manzanilla'
   },
   {
@@ -65,184 +61,75 @@ const empresasData = [
     email: 'albariño@vinedosgallegos.com',
     cif: 'A36567890',
     representante: 'María José Santos',
-    activo: true,
     notas: 'Especialistas en Albariño D.O. Rías Baixas'
   }
 ];
 
-// Datos de ejemplo para muestras
+// Datos de ejemplo para muestras (usando solo campos básicos)
 const muestrasData = [
   {
     codigo: 'RJA001',
     nombre: 'Rioja Reserva 2019',
     empresa_id: null, // Se asignará después de insertar empresas
-    variedad: 'Tempranillo',
-    denominacion: 'D.O.Ca. Rioja',
-    cosecha: 2019,
-    grado_alcoholico: 14.5,
-    precio: 25.90,
-    existencias: 120,
-    descripcion: 'Vino tinto criado 12 meses en barrica de roble francés',
-    notas_cata: 'Color rojo cereza, aromas a frutos rojos maduros con notas de vainilla',
-    maridaje: 'Carnes rojas, quesos curados, legumbres',
-    temperatura_servicio: 16,
-    activo: true,
-    created_at: new Date().toISOString()
+    descripcion: 'Vino tinto criado 12 meses en barrica de roble francés. Tempranillo D.O.Ca. Rioja 2019'
   },
   {
     codigo: 'DUE002',
     nombre: 'Ribera Crianza 2020',
     empresa_id: null,
-    variedad: 'Tinta del País',
-    denominacion: 'D.O. Ribera del Duero',
-    cosecha: 2020,
-    grado_alcoholico: 13.8,
-    precio: 18.50,
-    existencias: 85,
-    descripcion: 'Vino tinto con crianza de 12 meses en barrica americana',
-    notas_cata: 'Intenso color granate, aromas frutales con toques especiados',
-    maridaje: 'Asados, caza menor, embutidos',
-    temperatura_servicio: 17,
-    activo: true,
-    created_at: new Date().toISOString()
+    descripcion: 'Vino tinto con crianza de 12 meses en barrica americana. Tinta del País D.O. Ribera del Duero 2020'
   },
   {
     codigo: 'CAT003',
     nombre: 'Cava Brut Reserva',
     empresa_id: null,
-    variedad: 'Macabeo, Xarel·lo, Parellada',
-    denominacion: 'D.O. Cava',
-    cosecha: 2021,
-    grado_alcoholico: 11.5,
-    precio: 12.75,
-    existencias: 200,
-    descripcion: 'Cava con crianza mínima de 15 meses',
-    notas_cata: 'Burbuja fina, aromas florales y cítricos, fresco y equilibrado',
-    maridaje: 'Aperitivos, mariscos, pescados blancos',
-    temperatura_servicio: 6,
-    activo: true,
-    created_at: new Date().toISOString()
+    descripcion: 'Cava con crianza mínima de 15 meses. Macabeo, Xarel·lo, Parellada D.O. Cava 2021'
   },
   {
     codigo: 'AND004',
     nombre: 'Fino La Palma',
     empresa_id: null,
-    variedad: 'Palomino Fino',
-    denominacion: 'D.O. Jerez-Xérès-Sherry',
-    cosecha: 2022,
-    grado_alcoholico: 15.0,
-    precio: 8.90,
-    existencias: 150,
-    descripcion: 'Vino generoso criado bajo velo de flor',
-    notas_cata: 'Color dorado pálido, aromas almendrados, seco y salino',
-    maridaje: 'Jamón ibérico, aceitunas, mariscos',
-    temperatura_servicio: 8,
-    activo: true,
-    created_at: new Date().toISOString()
+    descripcion: 'Vino generoso criado bajo velo de flor. Palomino Fino D.O. Jerez 2022'
   },
   {
     codigo: 'GAL005',
     nombre: 'Albariño Pazo Real',
     empresa_id: null,
-    variedad: 'Albariño',
-    denominacion: 'D.O. Rías Baixas',
-    cosecha: 2023,
-    grado_alcoholico: 12.5,
-    precio: 16.20,
-    existencias: 95,
-    descripcion: 'Vino blanco fermentado en depósito de acero inoxidable',
-    notas_cata: 'Color amarillo pajizo, aromas florales y cítricos, fresco y mineral',
-    maridaje: 'Pulpo, percebes, empanada gallega',
-    temperatura_servicio: 10,
-    activo: true,
-    created_at: new Date().toISOString()
+    descripcion: 'Vino blanco fermentado en acero inoxidable. Albariño D.O. Rías Baixas 2023'
   },
   {
     codigo: 'RJA006',
     nombre: 'Garnacha Joven 2023',
     empresa_id: null,
-    variedad: 'Garnacha',
-    denominacion: 'D.O.Ca. Rioja',
-    cosecha: 2023,
-    grado_alcoholico: 13.2,
-    precio: 9.85,
-    existencias: 180,
-    descripcion: 'Vino tinto joven sin crianza en madera',
-    notas_cata: 'Color violáceo, aromas frutales intensos, ligero y afrutado',
-    maridaje: 'Tapas, pizza, pasta con tomate',
-    temperatura_servicio: 14,
-    activo: true,
-    created_at: new Date().toISOString()
+    descripcion: 'Vino tinto joven sin crianza en madera. Garnacha D.O.Ca. Rioja 2023'
   },
   {
     codigo: 'DUE007',
     nombre: 'Rosado Premium',
     empresa_id: null,
-    variedad: 'Tempranillo',
-    denominacion: 'D.O. Ribera del Duero',
-    cosecha: 2023,
-    grado_alcoholico: 12.8,
-    precio: 11.40,
-    existencias: 75,
-    descripcion: 'Vino rosado elaborado por sangrado',
-    notas_cata: 'Color rosa frambuesa, aromas a frutos rojos, fresco y equilibrado',
-    maridaje: 'Ensaladas, sushi, comida asiática',
-    temperatura_servicio: 8,
-    activo: true,
-    created_at: new Date().toISOString()
+    descripcion: 'Vino rosado elaborado por sangrado. Tempranillo D.O. Ribera del Duero 2023'
   },
   {
     codigo: 'CAT008',
     nombre: 'Moscatel Dulce',
     empresa_id: null,
-    variedad: 'Moscatel de Alejandría',
-    denominacion: 'D.O. Valencia',
-    cosecha: 2022,
-    grado_alcoholico: 15.5,
-    precio: 22.30,
-    existencias: 45,
-    descripcion: 'Vino dulce natural de Moscatel',
-    notas_cata: 'Color dorado brillante, aromas florales intensos, dulce y aromático',
-    maridaje: 'Postres, foie gras, quesos azules',
-    temperatura_servicio: 12,
-    activo: true,
-    created_at: new Date().toISOString()
+    descripcion: 'Vino dulce natural de Moscatel. Moscatel de Alejandría D.O. Valencia 2022'
   }
 ];
 
-// Datos de ejemplo para catadores
+// Datos de ejemplo para catadores (usando solo campos básicos)
 const catadoresData = [
   {
     codigo: 'CAT001',
     nombre: 'María Elena',
     apellido: 'Rodríguez Vázquez',
-    email: 'maria.rodriguez@catas2026.com',
-    telefono: '645-123-456',
-    especialidad: 'Vinos Tintos',
-    nivel: 'Sommelier Certificado',
-    años_experiencia: 12,
-    certificaciones: 'WSET Level 3, Court of Master Sommeliers Level 2',
-    mesa: 1,
-    activo: true,
-    logueado: false,
-    created_at: new Date().toISOString(),
-    notas: 'Especialista en vinos de Rioja y Ribera del Duero'
+    email: 'maria.rodriguez@catas2026.com'
   },
   {
     codigo: 'CAT002',
     nombre: 'Antonio',
     apellido: 'García Martín',
-    email: 'antonio.garcia@catas2026.com',
-    telefono: '678-234-567',
-    especialidad: 'Vinos Blancos',
-    nivel: 'Enólogo',
-    años_experiencia: 8,
-    certificaciones: 'Licenciado en Enología, WSET Level 2',
-    mesa: 1,
-    activo: true,
-    logueado: false,
-    created_at: new Date().toISOString(),
-    notas: 'Experto en vinos de Rías Baixas y Penedès'
+    email: 'antonio.garcia@catas2026.com'
   },
   {
     codigo: 'CAT003',

@@ -1,6 +1,9 @@
 import { supabase } from '../api/supabaseClient';
+import SchemaInspector from './SchemaInspector';
+import { useState } from 'react';
 
 function TestSupabase() {
+  const [showSchemaInspector, setShowSchemaInspector] = useState(false);
   const createAdminUser = async () => {
     const email = prompt('Ingresa tu email para crear el usuario admin:', 'admin@virtus.com');
     if (!email) return;

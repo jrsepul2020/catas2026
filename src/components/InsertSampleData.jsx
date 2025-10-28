@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Database, Trash2, Users, Building, Wine, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
-import { insertSampleData, clearSampleData } from '@/utils/insertSampleData';
+import { insertSampleData, clearSampleData } from '@/utils/insertSampleDataSimple';
 
 const InsertSampleData = () => {
   const [isInserting, setIsInserting] = useState(false);
@@ -22,6 +22,7 @@ const InsertSampleData = () => {
     setResult(null);
     
     try {
+      console.log('🔍 Verificando estructura de base de datos antes de insertar...');
       const response = await insertSampleData();
       
       if (response.success) {
@@ -31,6 +32,7 @@ const InsertSampleData = () => {
         showAlert(`Error: ${response.error}`, 'error');
       }
     } catch (error) {
+      console.error('Error en inserción:', error);
       showAlert(`Error insertando datos: ${error.message}`, 'error');
     } finally {
       setIsInserting(false);
