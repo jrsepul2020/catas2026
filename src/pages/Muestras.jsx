@@ -20,23 +20,41 @@ export default function Muestras() {
     queryFn: async () => {
       try {
         console.log('🔍 Cargando muestras desde Supabase...');
+        
+        // Primero intentar obtener información de la tabla
+        const { count, error: countError } = await supabase
+          .from('muestras')
+          .select('*', { count: 'exact', head: true });
+        
+        if (countError) {
+          console.error('❌ Error contando muestras:', countError);
+        } else {
+          console.log('📊 Total de muestras en la tabla:', count);
+        }
+        
+        // Obtener los datos reales
         const { data, error } = await supabase
           .from('muestras')
           .select('*')
           .order('id');
         
         if (error) {
-          console.error('❌ Error específico:', error);
+          console.error('❌ Error específico:', error.message, error.details, error.hint);
           throw error;
         }
-        console.log('✅ Muestras cargadas:', data?.length || 0);
-        console.log('📋 Datos de muestras:', data);
+        
+        console.log('✅ Muestras cargadas exitosamente:', data?.length || 0);
+        console.log('📋 Primeras 3 muestras:', data?.slice(0, 3));
+        console.log('📋 Estructura de primera muestra:', data?.[0] ? Object.keys(data[0]) : 'No hay datos');
+        
         return data || [];
       } catch (err) {
         console.error('❌ Error cargando muestras:', err);
         throw err;
       }
     },
+    retry: 1,
+    staleTime: 30000, // 30 segundos
   });
 
   // Filtrar muestras (con validación)
@@ -76,8 +94,12 @@ export default function Muestras() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#333951]"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#333951] mx-auto"></div>
+          <p className="text-gray-600">Cargando muestras desde Supabase...</p>
+          <p className="text-sm text-gray-500">Abre la consola (F12) para ver detalles</p>
+        </div>
       </div>
     );
   }
@@ -90,6 +112,11 @@ export default function Muestras() {
           <div className="text-red-600 mb-4">
             <p className="text-lg font-semibold">Error cargando muestras</p>
             <p className="text-sm">{error.message}</p>
+            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded text-left max-w-md mx-auto">
+              <p className="text-xs text-red-700 font-mono break-words">
+                {JSON.stringify(error, null, 2)}
+              </p>
+            </div>
           </div>
           <button 
             onClick={() => window.location.reload()} 
@@ -97,6 +124,7 @@ export default function Muestras() {
           >
             Reintentar
           </button>
+          <p className="text-sm text-gray-500 mt-2">Revisa la consola (F12) para más detalles</p>
         </div>
       </div>
     );
@@ -292,11 +320,20 @@ export default function Muestras() {
                 ))}
                 {muestrasFiltradas.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8 text-gray-500">
-                      {filtroTexto || filtroCategoria || filtroEstado !== "todas" 
-                        ? "No se encontraron muestras con los filtros aplicados"
-                        : "No hay muestras registradas"
-                      }
+                    <TableCell colSpan={5} className="text-center py-8">
+                      <div className="space-y-2">
+                        <p className="text-gray-500">
+                          {filtroTexto || filtroCategoria || filtroEstado !== "todas" 
+                            ? "No se encontraron muestras con los filtros aplicados"
+                            : "No hay muestras registradas"
+                          }
+                        </p>
+                        <div className="text-xs text-gray-400 space-y-1">
+                          <p>Total en base de datos: {muestras.length}</p>
+                          <p>Filtros activos: {filtroTexto ? `Texto: "${filtroTexto}"` : ''} {filtroCategoria ? `Categoría: "${filtroCategoria}"` : ''} Estado: {filtroEstado}</p>
+                          <p className="font-mono">Abre la consola (F12) para ver logs detallados</p>
+                        </div>
+                      </div>
                     </TableCell>
                   </TableRow>
                 )}

@@ -80,23 +80,19 @@ export default function Catadores() {
     
     const busqueda = filtroTexto.toLowerCase();
     return (
-      catador.codigo?.toLowerCase().includes(busqueda) ||
       catador.nombre?.toLowerCase().includes(busqueda) ||
       catador.email?.toLowerCase().includes(busqueda) ||
       catador.rol?.toLowerCase().includes(busqueda) ||
       catador.mesa?.toLowerCase().includes(busqueda) ||
-      catador.puesto?.toLowerCase().includes(busqueda) ||
-      catador.tablet?.toLowerCase().includes(busqueda)
+      catador.codigo?.toString().includes(busqueda)
     );
   });
 
   const handleEdit = (catador) => {
     setEditingId(catador.id);
     setEditData({
-      rol: catador.rol,
-      mesa: catador.mesa,
-      puesto: catador.puesto,
-      tablet: catador.tablet
+      nombre: catador.nombre,
+      email: catador.email,
     });
   };
 

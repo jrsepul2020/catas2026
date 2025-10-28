@@ -18,6 +18,8 @@ import Welcome from "./Welcome";
 
 import Configuracion from "./Configuracion";
 
+import ConfiguracionInicial from "./ConfiguracionInicial";
+
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
 const PAGES = {
@@ -84,6 +86,8 @@ function PagesContent() {
                 <Route path="/Mesas" element={<Mesas />} />
                 
                 <Route path="/Configuracion" element={<Configuracion />} />
+                
+                <Route path="/setup" element={<ConfiguracionInicial />} />
             </Routes>
         </Layout>
     );

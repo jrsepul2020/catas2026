@@ -4,21 +4,29 @@ function TestSupabase() {
   const createAdminUser = async () => {
     const email = prompt('Ingresa tu email para crear el usuario admin:', 'admin@virtus.com');
     if (!email) return;
+    
+    const password = prompt('Ingresa una contraseña para el usuario admin:', 'admin123');
+    if (!password) return;
 
     console.log('👤 Creando usuario administrador...');
     
-    const adminData = {
-      nombre: 'Administrador',
-      email: email,
-      rol: 'Presidente',
-      mesa: 'Mesa 1',
-      puesto: 'Puesto 1',
-      tablet: 'Tablet 01',
-      activo: true,
-      codigo: 1
-    };
-
     try {
+      // Importar bcrypt para hashear la contraseña
+      const bcrypt = await import('bcryptjs');
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+      
+      // Usar solo las columnas básicas que sabemos que existen + password_hash
+      const adminData = {
+        nombre: 'Administrador',
+        email: email,
+        password_hash: hashedPassword,
+        activo: true,
+        codigo: 1
+      };
+      
+      console.log('🔐 Contraseña hasheada con bcrypt...');
+
       const { data, error } = await supabase
         .from('catadores')
         .insert(adminData)
@@ -29,7 +37,7 @@ function TestSupabase() {
         alert('Error: ' + error.message);
       } else {
         console.log('✅ Admin creado:', data);
-        alert(`✅ Usuario admin creado exitosamente!\nEmail: ${email}\nPuedes usar cualquier password\n\n⚠️ Ahora debes activar la autenticación en el código`);
+        alert(`✅ Usuario admin creado exitosamente!\nEmail: ${email}\nContraseña: ${password}\n\n🔐 Contraseña hasheada con bcrypt`);
       }
     } catch (err) {
       console.error('💥 Error:', err);
@@ -41,11 +49,32 @@ function TestSupabase() {
     console.log('📊 Creando datos de ejemplo...');
     
     try {
-      // Crear algunos catadores de ejemplo
+      // Crear algunos catadores de ejemplo con contraseñas
+      const bcrypt = await import('bcryptjs');
+      const salt = await bcrypt.genSalt(10);
+      
       const catadores = [
-        { nombre: 'Juan Pérez', email: 'juan@virtus.com', rol: 'Catador', mesa: 'Mesa 1', puesto: 'Puesto 2', tablet: 'Tablet 02', activo: true, codigo: 2 },
-        { nombre: 'María García', email: 'maria@virtus.com', rol: 'Experto', mesa: 'Mesa 2', puesto: 'Puesto 1', tablet: 'Tablet 03', activo: true, codigo: 3 },
-        { nombre: 'Carlos López', email: 'carlos@virtus.com', rol: 'Catador', mesa: 'Mesa 1', puesto: 'Puesto 3', tablet: 'Tablet 04', activo: true, codigo: 4 }
+        { 
+          nombre: 'Juan Pérez', 
+          email: 'juan@virtus.com', 
+          password_hash: await bcrypt.hash('juan123', salt),
+          activo: true, 
+          codigo: 2 
+        },
+        { 
+          nombre: 'María García', 
+          email: 'maria@virtus.com', 
+          password_hash: await bcrypt.hash('maria123', salt),
+          activo: true, 
+          codigo: 3 
+        },
+        { 
+          nombre: 'Carlos López', 
+          email: 'carlos@virtus.com', 
+          password_hash: await bcrypt.hash('carlos123', salt),
+          activo: true, 
+          codigo: 4 
+        }
       ];
 
       const { data: catadoresData, error: catadoresError } = await supabase
@@ -79,11 +108,57 @@ function TestSupabase() {
       }
 
       alert('✅ Datos de ejemplo creados exitosamente!\n' +
-            `${catadores.length} catadores y ${muestras.length} muestras agregados`);
+            `${catadores.length} catadores y ${muestras.length} muestras agregados\n\n` +
+            '🔐 Contraseñas de catadores:\n' +
+            'juan@virtus.com - juan123\n' +
+            'maria@virtus.com - maria123\n' +
+            'carlos@virtus.com - carlos123');
 
     } catch (err) {
       console.error('💥 Error:', err);
       alert('Error: ' + err.message);
+    }
+  };
+
+  const checkTableSchema = async () => {
+    console.log('🗂️ Verificando esquema de tablas...');
+    
+    try {
+      // Intentar obtener un registro para ver las columnas disponibles
+      const { data: sampleCatador, error: catadorError } = await supabase
+        .from('catadores')
+        .select('*')
+        .limit(1);
+      
+      if (catadorError) {
+        console.log('❌ No se pudo acceder a catadores:', catadorError.message);
+      } else {
+        console.log('📋 Estructura de tabla catadores:');
+        if (sampleCatador && sampleCatador.length > 0) {
+          console.log('Columnas disponibles:', Object.keys(sampleCatador[0]));
+        } else {
+          console.log('Tabla catadores existe pero está vacía');
+        }
+      }
+
+      const { data: sampleMuestra, error: muestraError } = await supabase
+        .from('muestras')
+        .select('*')
+        .limit(1);
+      
+      if (muestraError) {
+        console.log('❌ No se pudo acceder a muestras:', muestraError.message);
+      } else {
+        console.log('📋 Estructura de tabla muestras:');
+        if (sampleMuestra && sampleMuestra.length > 0) {
+          console.log('Columnas disponibles:', Object.keys(sampleMuestra[0]));
+        } else {
+          console.log('Tabla muestras existe pero está vacía');
+        }
+      }
+
+    } catch (err) {
+      console.error('💥 Error verificando esquema:', err);
     }
   };
 
@@ -178,6 +253,21 @@ function TestSupabase() {
         }}
       >
         Crear Datos de Ejemplo
+      </button>
+      
+      <button 
+        onClick={checkTableSchema}
+        style={{ 
+          padding: '10px 20px', 
+          background: '#6c757d', 
+          color: 'white', 
+          border: 'none', 
+          borderRadius: '5px',
+          cursor: 'pointer',
+          marginLeft: '10px'
+        }}
+      >
+        Ver Esquema de Tablas
       </button>
       
       <p><small>Abre la consola del navegador (F12) para ver los resultados</small></p>

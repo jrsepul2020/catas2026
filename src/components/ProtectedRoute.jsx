@@ -18,7 +18,7 @@ export default function ProtectedRoute({ children }) {
   }
 
   // BYPASS TEMPORAL: Permitir acceso sin autenticación para configuración inicial
-  const bypassAuth = true; // Cambiar a false después de crear el usuario admin
+  const bypassAuth = false; // Sistema de contraseñas seguro activado
 
   if (bypassAuth) {
     return (

@@ -427,10 +427,35 @@ export const supabaseServices = {
             return { success: false, message: 'Email no encontrado o catador inactivo' }
           }
 
-          // En un sistema real, aquí verificarías el hash de la contraseña
-          // Por simplicidad, asumimos que el password coincide si el catador existe
-          // TODO: Implementar verificación real de password con bcrypt
-          console.log('Password provided:', password); // Para evitar warning de variable no usada
+          // Verificar contraseña con bcrypt
+          const bcrypt = await import('bcryptjs')
+          
+          // Si no tiene hash de contraseña, crear uno con la contraseña proporcionada (migración)
+          if (!catador.password_hash) {
+            console.log('⚠️ Usuario sin contraseña, creando hash...')
+            const salt = await bcrypt.genSalt(10)
+            const hashedPassword = await bcrypt.hash(password, salt)
+            
+            // Actualizar con el hash
+            const { error: updateError } = await supabase
+              .from('catadores')
+              .update({ password_hash: hashedPassword })
+              .eq('id', catador.id)
+              
+            if (updateError) {
+              console.error('Error actualizando contraseña:', updateError)
+              return { success: false, message: 'Error interno del servidor' }
+            }
+            
+            catador.password_hash = hashedPassword
+          }
+          
+          // Verificar contraseña
+          const isPasswordValid = await bcrypt.compare(password, catador.password_hash)
+          
+          if (!isPasswordValid) {
+            return { success: false, message: 'Contraseña incorrecta' }
+          }
           
           // Generar session ID
           const sessionId = `session_${catador.id}_${Date.now()}`
