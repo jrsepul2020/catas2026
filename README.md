@@ -1,19 +1,28 @@
-# 🍷 VIRTUS - Wine Management System
+# 🍷 VIRTUS - Sistema de Gestión de Catas de Vino
 
-Un sistema completo de gestión de catas de vino con interfaz moderna y funcionalidades avanzadas.
+Sistema completo para la gestión y control de catas de vino con funcionalidades avanzadas de organización de mesas, catadores y tandas.
 
 ![VIRTUS Preview](https://via.placeholder.com/800x400/333951/ffffff?text=VIRTUS+Wine+Management)
 
-## ✨ Características
+## 🎯 Características Principales
 
-- 📊 Dashboard con estadísticas en tiempo real
-- 🍷 Interfaz interactiva para catar vinos
-- 📝 Historial completo de catas
-- 📦 Organización de muestras por tandas
-- 🔍 Búsqueda y filtrado avanzado
-- 🎨 Sistema de temas personalizable
-- � Diseño responsive para todos los dispositivos
-- 🔐 Autenticación segura con Supabase
+### � Sistema de Autenticación Avanzado
+- **Login por Catadores**: Autenticación basada en tabla de catadores con email y clave
+- **Control de Sesiones**: Gestión de sesiones con localStorage y tracking en tiempo real
+- **Asignación de Mesas**: Control automático de ocupación y asignación de mesas
+- **Estado de Conexión**: Monitoreo en tiempo real de catadores conectados
+
+### 🪑 Control de Mesas Inteligente
+- **Vista en Tiempo Real**: Monitoreo instantáneo del estado de todas las mesas
+- **Ocupación Dinámica**: Control de capacidad y estado de cada mesa (vacía, parcial, completa)
+- **Vista Dual**: Visualización en grid de mesas o tabla detallada
+- **Estadísticas Live**: Métricas en tiempo real de ocupación y disponibilidad
+
+### � Gestión de Tandas y Muestras
+- **Organización Temporal**: Agrupación de muestras por tandas de cata
+- **Asignación de Mesas**: Distribución automática de tandas a mesas específicas
+- **Control de Progreso**: Seguimiento del estado de cada tanda y muestra
+- **PWA Optimizada**: Interfaz optimizada para tablets en orientación horizontal
 
 ## 🚀 Tech Stack
 

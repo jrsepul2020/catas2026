@@ -12,43 +12,11 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
-      manifest: {
-        name: 'VIRTUS - Wine Management System',
-        short_name: 'VIRTUS',
-        description: 'Sistema completo de gestión de catas de vino con interfaz moderna',
-        theme_color: '#333951',
-        background_color: '#ffffff',
-        display: 'standalone',
-        orientation: 'landscape',
-        scope: '/',
-        start_url: '/',
-        prefer_related_applications: false,
-        display_override: ['window-controls-overlay', 'standalone'],
-        categories: ['productivity', 'business', 'food'],
-        lang: 'es',
-        dir: 'ltr',
-        icons: [
-          {
-            src: 'pwa-192x192.svg',
-            sizes: '192x192',
-            type: 'image/svg+xml'
-          },
-          {
-            src: 'pwa-512x512.svg',
-            sizes: '512x512',
-            type: 'image/svg+xml'
-          },
-          {
-            src: 'pwa-512x512.svg',
-            sizes: '512x512',
-            type: 'image/svg+xml',
-            purpose: 'any maskable'
-          }
-        ]
-      },
+      includeAssets: ['favicon.svg', 'pwa-192x192.png', 'pwa-192x192.svg', 'pwa-512x512.svg'],
+      manifest: false, // Usamos nuestro manifest.json personalizado
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}']
+        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        navigateFallback: null // Deshabilitamos para evitar errores
       }
     })
   ],

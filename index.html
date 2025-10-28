@@ -2,20 +2,29 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#333951" />
-    <meta name="description" content="Sistema completo de gestión de catas de vino con interfaz moderna" />
+    <meta name="description" content="Sistema completo de gestión de catas de vino con interfaz moderna optimizada para tablets" />
     
-    <!-- Orientación y resolución optimizada -->
+    <!-- Android específico -->
     <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="screen-orientation" content="landscape" />
-    <meta name="orientation" content="landscape" />
+    <meta name="mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="mobile-web-app-title" content="VIRTUS" />
+    
+    <!-- Orientación forzada para Android -->
+    <meta name="screen-orientation" content="landscape-primary" />
+    <meta name="orientation" content="landscape-primary" />
     <meta name="format-detection" content="telephone=no" />
+    
+    <!-- Prevenir zoom en Android -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     
     <!-- Apple PWA -->
     <meta name="apple-mobile-web-app-capable" content="yes" />

@@ -2,7 +2,7 @@
 
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Wine, LayoutDashboard, ClipboardList, LogOut, Download, Menu, Layers, Package, Settings, Users } from "lucide-react";
+import { Wine, LayoutDashboard, ClipboardList, LogOut, Download, Menu, Layers, Package, Settings, Users, MapPin, Home } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/components/AuthProvider.jsx";
 import {
@@ -22,6 +22,11 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
 const navigationItems = [
+  {
+    title: "Inicio",
+    url: createPageUrl("Welcome"),
+    icon: Home,
+  },
   {
     title: "Dashboard",
     url: createPageUrl("Dashboard"),
@@ -53,6 +58,11 @@ const navigationItems = [
     icon: Users,
   },
   {
+    title: "Mesas",
+    url: createPageUrl("Mesas"),
+    icon: MapPin,
+  },
+  {
     title: "Configuración",
     url: createPageUrl("Configuracion"),
     icon: Settings,
@@ -63,7 +73,7 @@ export default function Layout({ children, currentPageName }) {
   const location = useLocation();
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstallButton, setShowInstallButton] = useState(false);
-  const { user, signOut } = useAuth();
+  const { catador, signOut } = useAuth();
 
   const handleInstallClick = async () => {
     if (!deferredPrompt) {
@@ -92,9 +102,9 @@ export default function Layout({ children, currentPageName }) {
   };
 
   const getUserInitials = () => {
-    // Supabase user structure is different
-    const displayName = user?.user_metadata?.name || user?.user_metadata?.full_name || user?.email;
-    if (!displayName) return "U";
+    // Catador structure
+    const displayName = catador?.nombre || catador?.email;
+    if (!displayName) return "C";
     
     if (displayName.includes("@")) {
       // If it's an email, use first letter + first letter after @
@@ -213,9 +223,9 @@ export default function Layout({ children, currentPageName }) {
               </Avatar>
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-white text-sm truncate">
-                  {user?.user_metadata?.name || user?.user_metadata?.full_name || user?.email || "Catador"}
+                  {catador?.nombre || catador?.email || "Catador"}
                 </p>
-                <p className="text-xs text-gray-300 truncate">{user?.email || ""}</p>
+                <p className="text-xs text-gray-300 truncate">{catador?.email || ""}</p>
               </div>
             </div>
 

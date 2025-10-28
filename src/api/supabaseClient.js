@@ -410,6 +410,89 @@ export const supabaseServices = {
         
         if (error) throw error
         return true
+      },
+
+      // Métodos de autenticación personalizados
+      async signIn(email, password) {
+        try {
+          // Buscar catador por email
+          const { data: catador, error } = await supabase
+            .from('catadores')
+            .select('*')
+            .eq('email', email)
+            .eq('activo', true)
+            .single()
+          
+          if (error || !catador) {
+            return { success: false, message: 'Email no encontrado o catador inactivo' }
+          }
+
+          // En un sistema real, aquí verificarías el hash de la contraseña
+          // Por simplicidad, asumimos que el password coincide si el catador existe
+          // TODO: Implementar verificación real de password con bcrypt
+          
+          // Generar session ID
+          const sessionId = `session_${catador.id}_${Date.now()}`
+          
+          // Actualizar estado de login
+          const { error: updateError } = await supabase
+            .from('catadores')
+            .update({
+              logueado: true,
+              ultimo_login: new Date().toISOString(),
+              session_id: sessionId,
+              mesa_actual: catador.mesa
+            })
+            .eq('id', catador.id)
+          
+          if (updateError) throw updateError
+          
+          return {
+            success: true,
+            catador: { ...catador, logueado: true, session_id: sessionId },
+            session_id: sessionId
+          }
+          
+        } catch (error) {
+          console.error('Error en signIn:', error)
+          return { success: false, message: 'Error en el servidor' }
+        }
+      },
+
+      async signOut(catadorId) {
+        const { error } = await supabase
+          .from('catadores')
+          .update({
+            logueado: false,
+            session_id: null
+          })
+          .eq('id', catadorId)
+        
+        if (error) throw error
+        return true
+      },
+
+      async getBySession(sessionId) {
+        const { data, error } = await supabase
+          .from('catadores')
+          .select('*')
+          .eq('session_id', sessionId)
+          .eq('logueado', true)
+          .single()
+        
+        if (error) return null
+        return data
+      },
+
+      async getLoggedCatadores() {
+        const { data, error } = await supabase
+          .from('catadores')
+          .select('*')
+          .eq('logueado', true)
+          .order('mesa_actual')
+        
+        if (error) throw error
+        return data || []
       }
     }
   }

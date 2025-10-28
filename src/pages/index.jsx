@@ -12,6 +12,12 @@ import Muestras from "./Muestras";
 
 import Catadores from "./Catadores";
 
+import Mesas from "./Mesas";
+
+import Login from "./Login";
+
+import Welcome from "./Welcome";
+
 import Configuracion from "./Configuracion";
 
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
@@ -19,6 +25,8 @@ import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-route
 const PAGES = {
     
     Dashboard: Dashboard,
+    
+    Welcome: Welcome,
     
     CatarVino: CatarVino,
     
@@ -29,6 +37,8 @@ const PAGES = {
     Muestras: Muestras,
     
     Catadores: Catadores,
+    
+    Mesas: Mesas,
     
     Configuracion: Configuracion,
     
@@ -56,10 +66,12 @@ function PagesContent() {
         <Layout currentPageName={currentPage}>
             <Routes>            
                 
-                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/" element={<Welcome />} />
                 
                 
                 <Route path="/Dashboard" element={<Dashboard />} />
+                
+                <Route path="/Welcome" element={<Welcome />} />
                 
                 <Route path="/CatarVino" element={<CatarVino />} />
                 
@@ -70,6 +82,8 @@ function PagesContent() {
                 <Route path="/Muestras" element={<Muestras />} />
                 
                 <Route path="/Catadores" element={<Catadores />} />
+                
+                <Route path="/Mesas" element={<Mesas />} />
                 
                 <Route path="/Configuracion" element={<Configuracion />} />
             </Routes>
