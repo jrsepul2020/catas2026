@@ -4,7 +4,7 @@
 -- Crear tabla empresa_muestras si no existe
 CREATE TABLE IF NOT EXISTS empresa_muestras (
   id SERIAL PRIMARY KEY,
-  empresa_id INTEGER NOT NULL REFERENCES empresas(id) ON DELETE CASCADE,
+  empresa_id UUID NOT NULL REFERENCES empresas(id) ON DELETE CASCADE,
   muestra_id INTEGER NOT NULL REFERENCES muestras(id) ON DELETE CASCADE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   

@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS empresa_muestras CASCADE;
 -- 2. Crear tabla con tipos correctos (INTEGER en lugar de UUID)
 CREATE TABLE empresa_muestras (
   id SERIAL PRIMARY KEY,
-  empresa_id INTEGER NOT NULL REFERENCES empresas(id) ON DELETE CASCADE,
+  empresa_id UUID NOT NULL REFERENCES empresas(id) ON DELETE CASCADE,
   muestra_id INTEGER NOT NULL REFERENCES muestras(id) ON DELETE CASCADE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   
