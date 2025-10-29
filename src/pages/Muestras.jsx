@@ -33,16 +33,36 @@ export default function Muestras() {
         }
         
         // Obtener los datos con relación directa a empresas mediante empresa_id
-        const { data, error } = await supabase
+        // Intentar diferentes sintaxis de query
+        let data, error;
+        
+        // Opción 1: Sintaxis con alias
+        const result1 = await supabase
           .from('muestras')
-          .select(`
-            *,
-            empresas:empresa_id (
-              id,
-              nombre
-            )
-          `)
+          .select('*, empresas!empresa_id(id, nombre)')
           .order('id');
+        
+        if (result1.error) {
+          console.log('⚠️ Sintaxis 1 falló, intentando sintaxis 2...');
+          
+          // Opción 2: Sin el alias explícito
+          const result2 = await supabase
+            .from('muestras')
+            .select('*, empresas(id, nombre)')
+            .order('id');
+          
+          if (result2.error) {
+            console.log('⚠️ Sintaxis 2 falló, cargando sin relación...');
+            data = null;
+            error = result2.error;
+          } else {
+            data = result2.data;
+            error = null;
+          }
+        } else {
+          data = result1.data;
+          error = null;
+        }
         
         if (error) {
           console.error('❌ Error específico en query con relación:', {
