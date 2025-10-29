@@ -33,35 +33,51 @@ export default function Muestras() {
         }
         
         // Obtener los datos con relación directa a empresas mediante empresa_id
-        // Intentar diferentes sintaxis de query
+        // Usar el nombre exacto del constraint: fk_muestras_empresa
         let data, error;
         
-        // Opción 1: Sintaxis con alias
+        // Opción 1: Usando el constraint name
         const result1 = await supabase
           .from('muestras')
-          .select('*, empresas!empresa_id(id, nombre)')
+          .select('*, empresas!fk_muestras_empresa(id, nombre)')
           .order('id');
         
         if (result1.error) {
-          console.log('⚠️ Sintaxis 1 falló, intentando sintaxis 2...');
+          console.log('⚠️ Constraint name falló, intentando con empresa_id...');
           
-          // Opción 2: Sin el alias explícito
+          // Opción 2: Intentar con nombre de columna
           const result2 = await supabase
             .from('muestras')
-            .select('*, empresas(id, nombre)')
+            .select('*, empresas:empresa_id(id, nombre)')
             .order('id');
           
           if (result2.error) {
-            console.log('⚠️ Sintaxis 2 falló, cargando sin relación...');
-            data = null;
-            error = result2.error;
+            console.log('⚠️ Sintaxis empresa_id falló, intentando sin alias...');
+            
+            // Opción 3: Sin especificar la relación
+            const result3 = await supabase
+              .from('muestras')
+              .select('*, empresas(id, nombre)')
+              .order('id');
+            
+            if (result3.error) {
+              console.log('⚠️ Todas las sintaxis fallaron, cargando sin relación...');
+              data = null;
+              error = result3.error;
+            } else {
+              data = result3.data;
+              error = null;
+              console.log('✅ Sintaxis 3 (sin alias) funcionó');
+            }
           } else {
             data = result2.data;
             error = null;
+            console.log('✅ Sintaxis 2 (empresa_id) funcionó');
           }
         } else {
           data = result1.data;
           error = null;
+          console.log('✅ Sintaxis 1 (constraint name) funcionó');
         }
         
         if (error) {
