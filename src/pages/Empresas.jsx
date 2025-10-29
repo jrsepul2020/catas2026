@@ -60,16 +60,16 @@ export default function Empresas() {
     }
   });
 
-  // Obtener relación empresas-muestras
-  const { data: empresaMuestras = [] } = useQuery({
-    queryKey: ['empresa_muestras'],
+  // Obtener muestras asignadas a cada empresa (mediante empresa_id directo)
+  const { data: muestrasData = [] } = useQuery({
+    queryKey: ['muestras_con_empresa'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('empresa_muestras')
-        .select('*');
+        .from('muestras')
+        .select('id, nombre, empresa_id');
 
       if (error) {
-        console.log('⚠️ Tabla empresa_muestras no existe o no es accesible');
+        console.log('⚠️ Error cargando muestras:', error.message);
         return [];
       }
       return data || [];
@@ -104,38 +104,45 @@ export default function Empresas() {
       }
     },
     onSuccess: async (empresa) => {
-      // Asignar muestras si hay seleccionadas
+      // Asignar muestras directamente actualizando empresa_id
       if (selectedMuestras.length > 0) {
         try {
-          // Primero, eliminar asignaciones anteriores si es edición
+          // Primero, desasignar muestras anteriores de esta empresa
           if (editingEmpresa) {
             await supabase
-              .from('empresa_muestras')
-              .delete()
+              .from('muestras')
+              .update({ empresa_id: null })
               .eq('empresa_id', empresa.id);
           }
 
-          // Crear nuevas asignaciones
-          const asignaciones = selectedMuestras.map(muestraId => ({
-            empresa_id: empresa.id,
-            muestra_id: muestraId
-          }));
-
+          // Asignar nuevas muestras
           const { error: asignError } = await supabase
-            .from('empresa_muestras')
-            .insert(asignaciones);
+            .from('muestras')
+            .update({ empresa_id: empresa.id })
+            .in('id', selectedMuestras);
 
           if (asignError) {
             console.log('⚠️ Error asignando muestras:', asignError.message);
             toast.warning('Empresa guardada pero no se pudieron asignar las muestras');
           }
         } catch (err) {
-          console.log('⚠️ No se pudo crear relación con muestras:', err.message);
+          console.log('⚠️ No se pudo actualizar relación con muestras:', err.message);
+        }
+      } else if (editingEmpresa) {
+        // Si no hay muestras seleccionadas y estamos editando, desasignar todas
+        try {
+          await supabase
+            .from('muestras')
+            .update({ empresa_id: null })
+            .eq('empresa_id', empresa.id);
+        } catch (err) {
+          console.log('⚠️ Error desasignando muestras:', err.message);
         }
       }
 
       queryClient.invalidateQueries(['empresas']);
-      queryClient.invalidateQueries(['empresa_muestras']);
+      queryClient.invalidateQueries(['muestras']);
+      queryClient.invalidateQueries(['muestras_con_empresa']);
       toast.success(editingEmpresa ? 'Empresa actualizada correctamente' : 'Empresa creada correctamente');
       handleCloseDialog();
     },
@@ -148,14 +155,14 @@ export default function Empresas() {
   // Eliminar empresa
   const deleteMutation = useMutation({
     mutationFn: async (id) => {
-      // Primero eliminar relaciones con muestras
+      // Primero desasignar muestras de esta empresa
       try {
         await supabase
-          .from('empresa_muestras')
-          .delete()
+          .from('muestras')
+          .update({ empresa_id: null })
           .eq('empresa_id', id);
       } catch (err) {
-        console.log('⚠️ No se pudieron eliminar relaciones:', err.message);
+        console.log('⚠️ No se pudieron desasignar muestras:', err.message);
       }
 
       // Luego eliminar la empresa
@@ -168,7 +175,8 @@ export default function Empresas() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['empresas']);
-      queryClient.invalidateQueries(['empresa_muestras']);
+      queryClient.invalidateQueries(['muestras']);
+      queryClient.invalidateQueries(['muestras_con_empresa']);
       toast.success('Empresa eliminada correctamente');
     },
     onError: (error) => {
@@ -188,10 +196,10 @@ export default function Empresas() {
         contacto: empresa.contacto || ''
       });
 
-      // Cargar muestras asignadas
-      const muestrasAsignadas = empresaMuestras
-        .filter(em => em.empresa_id === empresa.id)
-        .map(em => em.muestra_id);
+      // Cargar muestras asignadas (usando empresa_id directo)
+      const muestrasAsignadas = muestrasData
+        .filter(m => m.empresa_id === empresa.id)
+        .map(m => m.id);
       setSelectedMuestras(muestrasAsignadas);
     } else {
       setEditingEmpresa(null);
@@ -252,9 +260,9 @@ export default function Empresas() {
   };
 
   const getMuestrasDeEmpresa = (empresaId) => {
-    const muestraIds = empresaMuestras
-      .filter(em => em.empresa_id === empresaId)
-      .map(em => em.muestra_id);
+    const muestraIds = muestrasData
+      .filter(m => m.empresa_id === empresaId)
+      .map(m => m.id);
     
     return muestras.filter(m => muestraIds.includes(m.id));
   };
