@@ -3,9 +3,9 @@
 
 -- Crear tabla empresa_muestras si no existe
 CREATE TABLE IF NOT EXISTS empresa_muestras (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  empresa_id UUID NOT NULL REFERENCES empresas(id) ON DELETE CASCADE,
-  muestra_id UUID NOT NULL REFERENCES muestras(id) ON DELETE CASCADE,
+  id SERIAL PRIMARY KEY,
+  empresa_id INTEGER NOT NULL REFERENCES empresas(id) ON DELETE CASCADE,
+  muestra_id INTEGER NOT NULL REFERENCES muestras(id) ON DELETE CASCADE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   
   -- Evitar duplicados: una muestra solo puede estar asignada una vez a una empresa

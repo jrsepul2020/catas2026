@@ -52,9 +52,9 @@ Para que funcione la asignación de muestras, necesitas crear la tabla de relaci
 
 ```sql
 CREATE TABLE empresa_muestras (
-  id UUID PRIMARY KEY,
-  empresa_id UUID REFERENCES empresas(id),
-  muestra_id UUID REFERENCES muestras(id),
+  id SERIAL PRIMARY KEY,
+  empresa_id INTEGER REFERENCES empresas(id),
+  muestra_id INTEGER REFERENCES muestras(id),
   created_at TIMESTAMP,
   UNIQUE(empresa_id, muestra_id)
 );
