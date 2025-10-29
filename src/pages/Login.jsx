@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Wine, LogIn, User, Lock, AlertCircle, Loader2 } from "lucide-react";
+import { LogIn, User, Lock, AlertCircle, Loader2 } from "lucide-react";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -49,16 +49,10 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#333951]/10 via-gray-50 to-[#958154]/10 p-4">
       <div className="w-full max-w-md space-y-6">
         {/* Header */}
-        <div className="text-center space-y-4">
-          <div className="flex justify-center">
-            <div className="w-16 h-16 bg-gradient-to-br from-[#333951] to-[#958154] rounded-2xl flex items-center justify-center shadow-lg">
-              <Wine className="w-8 h-8 text-white" />
-            </div>
-          </div>
+        <div className="text-center space-y-2">
           <div>
-            <h1 className="text-3xl font-bold text-[#333951]">VIRTUS</h1>
-            <p className="text-gray-600">Sistema de Gestión de Catas</p>
-            <p className="text-sm text-[#958154] font-medium">Acceso para Catadores</p>
+            <h1 className="text-4xl font-bold text-[#333951]">International Awards Virtus</h1>
+            <p className="text-xl text-gray-600 mt-2">Sistema de Catas</p>
           </div>
         </div>
 
@@ -166,9 +160,8 @@ export default function Login() {
         </Card>
 
         {/* Footer */}
-        <div className="text-center text-xs text-gray-500 space-y-1">
-          <p>Sistema de Gestión de Catas de Vino</p>
-          <p>© 2025 VIRTUS - Todos los derechos reservados</p>
+        <div className="text-center text-xs text-gray-500">
+          <p>© 2025 International Awards Virtus - Todos los derechos reservados</p>
         </div>
       </div>
     </div>
