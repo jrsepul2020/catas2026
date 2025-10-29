@@ -46,8 +46,8 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#333951]/10 via-gray-50 to-[#958154]/10 p-4">
-      <div className="w-full max-w-md space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-[#333951]/10 via-gray-50 to-[#958154]/10 p-4 overflow-y-auto">
+      <div className="w-full max-w-md mx-auto space-y-6 py-8 md:py-12">
         {/* Header */}
         <div className="text-center space-y-2">
           <div>
