@@ -2,7 +2,7 @@
 
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Wine, LayoutDashboard, ClipboardList, LogOut, Download, Menu, Layers, Package, Settings, Users, MapPin, Home } from "lucide-react";
+import { Wine, LayoutDashboard, ClipboardList, LogOut, Download, Menu, Layers, Package, Settings, Users, MapPin, Home, Building } from "lucide-react";
 import PropTypes from 'prop-types';
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth.js";
@@ -62,6 +62,11 @@ const navigationItems = [
     title: "Mesas",
     url: createPageUrl("Mesas"),
     icon: MapPin,
+  },
+  {
+    title: "Empresas",
+    url: createPageUrl("Empresas"),
+    icon: Building,
   },
   {
     title: "Configuración",

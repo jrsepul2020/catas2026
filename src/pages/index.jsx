@@ -14,6 +14,8 @@ import Catadores from "./Catadores";
 
 import Mesas from "./Mesas";
 
+import Empresas from "./Empresas";
+
 import Welcome from "./Welcome";
 
 import Configuracion from "./Configuracion";
@@ -41,6 +43,8 @@ const PAGES = {
     Catadores: Catadores,
     
     Mesas: Mesas,
+    
+    Empresas: Empresas,
     
     Configuracion: Configuracion,
     
@@ -86,6 +90,8 @@ function PagesContent() {
                 <Route path="/Catadores" element={<Catadores />} />
                 
                 <Route path="/Mesas" element={<Mesas />} />
+                
+                <Route path="/Empresas" element={<Empresas />} />
                 
                 <Route path="/Configuracion" element={<Configuracion />} />
                 
