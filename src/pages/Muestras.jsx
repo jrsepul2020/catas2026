@@ -32,17 +32,14 @@ export default function Muestras() {
           console.log('📊 Total de muestras en la tabla:', count);
         }
         
-        // Obtener los datos reales con relación a empresas si existe
+        // Obtener los datos con relación directa a empresas mediante empresa_id
         const { data, error } = await supabase
           .from('muestras')
           .select(`
             *,
-            empresa_muestras!left (
-              empresa_id,
-              empresas!left (
-                id,
-                nombre
-              )
+            empresas:empresa_id (
+              id,
+              nombre
             )
           `)
           .order('id');
@@ -84,8 +81,8 @@ export default function Muestras() {
   const muestrasFiltradas = Array.isArray(muestras) ? muestras.filter(muestra => {
     if (!muestra) return false;
     
-    // Obtener nombre de empresa desde la relación si existe
-    const empresaNombre = muestra.empresa_muestras?.[0]?.empresas?.nombre || muestra.empresa || '';
+    // Obtener nombre de empresa desde la relación directa
+    const empresaNombre = muestra.empresas?.nombre || '';
     
     const coincideTexto = !filtroTexto || 
       String(muestra.nombre || '').toLowerCase().includes(filtroTexto.toLowerCase()) ||
