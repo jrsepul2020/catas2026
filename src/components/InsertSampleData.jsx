@@ -5,6 +5,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Database, Trash2, Users, Building, Wine, AlertCircle, CheckCircle, Loader2, Search } from 'lucide-react';
 import { insertSampleData, clearSampleData, inspectDatabaseSchema } from '@/utils/insertSampleDataDetective';
+import { diagnoseEmpresasTable, insertEmpresaWithDetectedFields } from '@/utils/diagnoseEmpresas';
 
 const InsertSampleData = () => {
   const [isInserting, setIsInserting] = useState(false);
@@ -91,50 +92,32 @@ const InsertSampleData = () => {
   const handleDiagnoseEmpresas = async () => {
     setIsInspecting(true);
     try {
-      // Diagnóstico específico para empresas
-      const { supabase } = await import('../api/supabaseClient.js');
+      console.log('🔬 Iniciando diagnóstico exhaustivo de empresas...');
+      const diagnosis = await diagnoseEmpresasTable();
       
-      console.log('🔍 DIAGNÓSTICO ESPECÍFICO DE EMPRESAS');
-      console.log('═══════════════════════════════════════');
+      // Mostrar resumen en alerta
+      let message = '� Diagnóstico completado:\n\n';
+      message += `✅ Tabla existe: ${diagnosis.tableExists ? 'Sí' : 'No'}\n`;
+      message += `✅ Puede leer: ${diagnosis.canRead ? 'Sí' : 'No'}\n`;
       
-      // Test 1: Verificar acceso a la tabla
-      console.log('📋 Test 1: Verificar acceso a tabla empresas...');
-      const { data: testData, error: testError } = await supabase
-        .from('empresas')
-        .select('*')
-        .limit(1);
-      
-      console.log('- Datos existentes:', testData);
-      console.log('- Error de acceso:', testError?.message || 'Sin error');
-      
-      // Test 2: Intentar inserción mínima
-      console.log('📋 Test 2: Intentar inserción mínima...');
-      const { data: insertData, error: insertError } = await supabase
-        .from('empresas')
-        .insert({ test_diagnostic: 'test' })
-        .select();
-      
-      console.log('- Resultado inserción:', insertData);
-      console.log('- Error inserción:', insertError?.message || 'Sin error');
-      
-      // Test 3: Probar campos comunes
-      const commonFields = ['nombre', 'name', 'empresa', 'razon_social', 'denominacion'];
-      console.log('📋 Test 3: Probar campos comunes...');
-      
-      for (const field of commonFields) {
-        try {
-          const { error } = await supabase
-            .from('empresas')
-            .insert({ [field]: `Test ${field}` })
-            .select();
-          
-          console.log(`- Campo '${field}':`, error ? `❌ ${error.message}` : '✅ Funciona');
-        } catch (err) {
-          console.log(`- Campo '${field}': ❌ Error - ${err.message}`);
-        }
+      if (diagnosis.existingColumns.length > 0) {
+        message += `\n📋 Columnas: ${diagnosis.existingColumns.join(', ')}\n`;
       }
       
-      showAlert('Diagnóstico de empresas completado. Ver consola para detalles.', 'info');
+      if (diagnosis.requiredFields.length > 0) {
+        message += `\n⚠️ Campos requeridos: ${diagnosis.requiredFields.join(', ')}\n`;
+      }
+      
+      if (diagnosis.workingFieldCombination) {
+        message += `\n✅ Combinación exitosa encontrada!\n`;
+        message += `Campos: ${Object.keys(diagnosis.workingFieldCombination).join(', ')}\n`;
+      } else {
+        message += `\n❌ No se encontró combinación exitosa\n`;
+      }
+      
+      message += '\n📝 Ver consola para detalles completos';
+      
+      showAlert(message, diagnosis.workingFieldCombination ? 'success' : 'warning');
     } catch (error) {
       console.error('Error en diagnóstico:', error);
       showAlert(`Error en diagnóstico: ${error.message}`, 'error');

@@ -1,5 +1,6 @@
 import { supabase } from '../api/supabaseClient.js';
 import bcrypt from 'bcryptjs';
+import { diagnoseEmpresasTable, insertEmpresaWithDetectedFields } from './diagnoseEmpresas.js';
 
 // Función para obtener información completa de la tabla
 async function getTableInfo(tableName) {
@@ -267,30 +268,49 @@ export async function insertSampleData() {
         console.log(`💥 ${tableName} - FALLO TOTAL: 0/${totalAttempts} registros insertados`);
         console.log(`🔍 ${tableName} - Info de tabla:`, JSON.stringify(tableInfo, null, 2));
         
-        // Diagnóstico específico para empresas
+        // Diagnóstico específico para empresas usando herramienta avanzada
         if (tableName === 'empresas') {
-          console.log(`🏢 DIAGNÓSTICO EMPRESAS:`);
-          console.log(`- Columnas detectadas:`, tableInfo.columns || 'Sin información');
-          console.log(`- Método de detección:`, tableInfo.method || 'Sin método');
-          console.log(`- Existe tabla:`, tableInfo.exists);
+          console.log(`\n🏢 ACTIVANDO DIAGNÓSTICO AVANZADO PARA EMPRESAS...`);
           
-          // Intentar inserción diagnóstica
           try {
-            const { error: diagError } = await supabase
-              .from('empresas')
-              .insert({ test_field: 'diagnostic' })
-              .select();
+            const diagnosis = await diagnoseEmpresasTable();
             
-            if (diagError) {
-              console.log(`🔍 Error diagnóstico empresas:`, diagError.message);
-              results.errors.push(`empresas: Error de schema - ${diagError.message}`);
+            // Si encontramos una combinación que funciona, intentar insertar con ella
+            if (diagnosis.workingFieldCombination) {
+              console.log('✅ Combinación exitosa detectada. Reintentando inserción con campos correctos...');
+              
+              for (let i = 0; i < totalAttempts; i++) {
+                const baseData = dataArray[i];
+                const result = await insertEmpresaWithDetectedFields(baseData);
+                
+                if (result.success) {
+                  successCount++;
+                  console.log(`✅ Empresa ${i + 1}/${totalAttempts} insertada con diagnóstico: ${baseData.name}`);
+                } else {
+                  console.log(`❌ Empresa ${i + 1}/${totalAttempts} falló incluso con diagnóstico: ${result.error}`);
+                }
+                
+                await new Promise(resolve => setTimeout(resolve, 100));
+              }
+              
+              results[tableName] = successCount;
+              
+              if (successCount > 0) {
+                console.log(`🎉 Diagnóstico exitoso! Se insertaron ${successCount} empresas`);
+              }
+            } else {
+              console.log('❌ Diagnóstico no pudo encontrar combinación de campos válida');
+              results.errors.push(`empresas: Diagnóstico no encontró campos válidos. Columnas: ${diagnosis.existingColumns.join(', ') || 'Desconocidas'}`);
             }
-          } catch (err) {
-            console.log(`🔍 Error en diagnóstico empresas:`, err.message);
+          } catch (diagErr) {
+            console.log(`❌ Error en diagnóstico avanzado:`, diagErr.message);
+            results.errors.push(`empresas: Error en diagnóstico - ${diagErr.message}`);
           }
         }
         
-        results.errors.push(`${tableName}: No se pudo insertar ningún registro`);
+        if (successCount === 0) {
+          results.errors.push(`${tableName}: No se pudo insertar ningún registro`);
+        }
       } else if (successCount < totalAttempts) {
         results.errors.push(`${tableName}: Solo se insertaron ${successCount} de ${totalAttempts} registros`);
       } else {
