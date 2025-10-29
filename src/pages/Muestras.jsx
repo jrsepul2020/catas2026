@@ -32,15 +32,38 @@ export default function Muestras() {
           console.log('📊 Total de muestras en la tabla:', count);
         }
         
-        // Obtener los datos reales
+        // Obtener los datos reales con relación a empresas si existe
         const { data, error } = await supabase
           .from('muestras')
-          .select('*')
+          .select(`
+            *,
+            empresa_muestras!left (
+              empresa_id,
+              empresas!left (
+                id,
+                nombre
+              )
+            )
+          `)
           .order('id');
         
         if (error) {
           console.error('❌ Error específico:', error.message, error.details, error.hint);
-          throw error;
+          
+          // Si falla por la relación, intentar sin ella
+          console.log('⚠️ Intentando cargar sin relación empresas...');
+          const { data: dataSimple, error: errorSimple } = await supabase
+            .from('muestras')
+            .select('*')
+            .order('id');
+          
+          if (errorSimple) {
+            console.error('❌ Error en consulta simple:', errorSimple);
+            throw errorSimple;
+          }
+          
+          console.log('✅ Muestras cargadas sin relación:', dataSimple?.length || 0);
+          return dataSimple || [];
         }
         
         console.log('✅ Muestras cargadas exitosamente:', data?.length || 0);
@@ -61,10 +84,13 @@ export default function Muestras() {
   const muestrasFiltradas = Array.isArray(muestras) ? muestras.filter(muestra => {
     if (!muestra) return false;
     
+    // Obtener nombre de empresa desde la relación si existe
+    const empresaNombre = muestra.empresa_muestras?.[0]?.empresas?.nombre || muestra.empresa || '';
+    
     const coincideTexto = !filtroTexto || 
       String(muestra.nombre || '').toLowerCase().includes(filtroTexto.toLowerCase()) ||
       String(muestra.codigo || '').includes(filtroTexto) ||
-      String(muestra.empresa || '').toLowerCase().includes(filtroTexto.toLowerCase()) ||
+      String(empresaNombre).toLowerCase().includes(filtroTexto.toLowerCase()) ||
       String(muestra.origen || '').toLowerCase().includes(filtroTexto.toLowerCase());
 
     const coincideCategoria = !filtroCategoria || muestra.categoria === filtroCategoria;
