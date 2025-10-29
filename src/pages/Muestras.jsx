@@ -45,21 +45,34 @@ export default function Muestras() {
           .order('id');
         
         if (error) {
-          console.error('❌ Error específico:', error.message, error.details, error.hint);
+          console.error('❌ Error específico en query con relación:', {
+            message: error.message,
+            details: error.details,
+            hint: error.hint,
+            code: error.code
+          });
           
           // Si falla por la relación, intentar sin ella
-          console.log('⚠️ Intentando cargar sin relación empresas...');
+          console.log('⚠️ La columna empresa_id podría no existir. Intentando cargar sin relación empresas...');
           const { data: dataSimple, error: errorSimple } = await supabase
             .from('muestras')
             .select('*')
             .order('id');
           
           if (errorSimple) {
-            console.error('❌ Error en consulta simple:', errorSimple);
+            console.error('❌ Error en consulta simple:', {
+              message: errorSimple.message,
+              details: errorSimple.details,
+              hint: errorSimple.hint,
+              code: errorSimple.code
+            });
             throw errorSimple;
           }
           
           console.log('✅ Muestras cargadas sin relación:', dataSimple?.length || 0);
+          if (dataSimple && dataSimple.length > 0) {
+            console.log('📋 Columnas disponibles en muestras:', Object.keys(dataSimple[0]));
+          }
           return dataSimple || [];
         }
         
